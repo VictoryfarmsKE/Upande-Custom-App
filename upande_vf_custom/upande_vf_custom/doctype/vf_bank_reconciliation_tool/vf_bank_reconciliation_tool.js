@@ -37,7 +37,7 @@ frappe.ui.form.on("VF Bank Reconciliation Tool", {
 
 	refresh: function (frm) {
 		frm.disable_save();
-		frappe.require("bank-reconciliation-tool.bundle.js", () =>
+		frappe.require("vf_bank-reconciliation-tool.bundle.js", () =>
 			frm.trigger("make_reconciliation_tool")
 		);
 
@@ -66,7 +66,7 @@ frappe.ui.form.on("VF Bank Reconciliation Tool", {
 
 		frm.add_custom_button(__('Auto Reconcile'), function() {
 			frappe.call({
-				method: "erpnext.accounts.doctype.bank_reconciliation_tool.bank_reconciliation_tool.auto_reconcile_vouchers",
+				method: "upande_vf_custom.upande_vf_custom.doctype.vf_bank_reconciliation_tool.vf_bank_reconciliation_tool.auto_reconcile_vouchers",
 				args: {
 					bank_account: frm.doc.bank_account,
 					from_date: frm.doc.bank_statement_from_date,
@@ -134,7 +134,7 @@ frappe.ui.form.on("VF Bank Reconciliation Tool", {
 		if (frm.doc.bank_account && frm.doc.bank_statement_from_date) {
 			frappe.call({
 				method:
-					"erpnext.accounts.doctype.bank_reconciliation_tool.bank_reconciliation_tool.get_account_balance",
+					"upande_vf_custom.upande_vf_custom.doctype.vf_bank_reconciliation_tool.vf_bank_reconciliation_tool.get_account_balance",
 				args: {
 					bank_account: frm.doc.bank_account,
 					till_date: frm.doc.bank_statement_from_date,
@@ -150,7 +150,7 @@ frappe.ui.form.on("VF Bank Reconciliation Tool", {
 		if (frm.doc.bank_account && frm.doc.bank_statement_to_date) {
 			return frappe.call({
 				method:
-					"erpnext.accounts.doctype.bank_reconciliation_tool.bank_reconciliation_tool.get_account_balance",
+					"upande_vf_custom.upande_vf_custom.doctype.vf_bank_reconciliation_tool.vf_bank_reconciliation_tool.get_account_balance",
 				args: {
 					bank_account: frm.doc.bank_account,
 					till_date: frm.doc.bank_statement_to_date,
