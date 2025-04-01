@@ -102,9 +102,11 @@ function processIPDraftPayments(frm, draftPymnts, grand_totals) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; // Assuming 'payment_reference' is a field in the child table
             newRow.beneficiary_name = dp.party; // Assuming 'beneficiary_name' is a field in the child table
-            newRow.bank_account = dp.bank_name;
-            newRow.reference = dp.reference_no
-            newRow.amount = dp.paid_amount; // Assuming 'amount' is a field in the child table
+            newRow.beneficiary_account = dp.party_bank_account;
+            newRow.reference = dp.reference_no;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount; // Assuming 'amount' is a field in the child table
+            newRow.swift_code = dp.party_bank_account.swift_code;
             existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
         }
     });
