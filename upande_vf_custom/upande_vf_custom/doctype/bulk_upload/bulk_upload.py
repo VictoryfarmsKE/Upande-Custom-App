@@ -48,7 +48,11 @@ class BulkUpload(Document):
                     if pymnt.get("party_bank_account"):
                         
                         bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')
+                        bank_account = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank_account_no')
+                        swift_code = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'custom_swift_code')
                         pymnt["bank_name"] = bank
+                        pymnt["bank_account"] = bank_account
+                        pymnt["swift_code"] = swift_code
                         
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)
