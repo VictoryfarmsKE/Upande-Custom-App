@@ -28,7 +28,7 @@ def get_data(filters):
                 `charge_bearer`,
                 `debit_narrative`,
                 `credit_narrative`,
-                `deal_reference_number
+                `deal_reference_number`
             FROM
                 `tabInternational Payments Bulk Upload Item`
             WHERE
