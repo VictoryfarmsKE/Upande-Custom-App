@@ -28,7 +28,8 @@ def get_data(filters):
                 `charge_bearer`,
                 `debit_narrative`,
                 `credit_narrative`,
-                `deal_reference_number`
+                `deal_reference_number`,
+                `name`
             FROM
                 `tabInternational Payments Bulk Upload Item`
             WHERE
@@ -42,7 +43,7 @@ def get_data(filters):
 
 def get_columns(filters=None):
     columns = [
-        {"label": "Purchase Order No", "fieldname": "reference","fieldtype": "Data", "width": 150, "align": "center"},
+        {"label": "Payment Reference", "fieldname": "reference","fieldtype": "Data", "width": 150, "align": "center"},
         {"label": "Debit Amount", "fieldname": "debit_amount", "fieldtype": "float", "width": 150, "align": "center"},
         {"label": "Payment Type", "fieldname": "payment_type", "fieldtype": "Data", "width": 200, "align": "center"},
         {"label": "Beneficiary Name", "fieldname": "beneficiary_name", "fieldtype": "Data", "width": 200, "align": "center"},

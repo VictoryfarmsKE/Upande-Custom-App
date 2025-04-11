@@ -103,7 +103,7 @@ function processIPDraftPayments(frm, draftPymnts, grand_totals) {
             newRow.payment_reference = dp.name;
             newRow.beneficiary_name = dp.party; 
             newRow.beneficiary_account = dp.bank_account;
-            newRow.reference = dp.reference_no;
+            newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
             newRow.debit_amount = dp.paid_amount;
             newRow.swift_code = dp.swift_code;
