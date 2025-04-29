@@ -162,7 +162,45 @@ class DriverConsignmentNote(Document):
             self.stock_transfer_number = new_stck_entry.name
         else:
             frappe.throw("Check Consignment Note Info!")
-    
+
+    def before_save(self):
+        self.refresh_items_from_crates()
+
+    def refresh_items_from_crates(self):
+        items_summary = {}
+
+        # Iterate through the crates table and aggregate quantities by item_code
+        if self.crates:
+            for crate in self.crates:
+                item_code = crate.get("item_code")
+                qty = crate.get("qty", 0)
+
+                if item_code not in items_summary:
+                    items_summary[item_code] = 0
+                items_summary[item_code] += qty
+                
+        self.items = []
+
+        # Populate the items table with the summarized data
+        for item_code, qty in items_summary.items():
+            item_details = frappe.db.get_value(
+                "Item",
+                item_code,
+                ["item_name", "description", "stock_uom"],
+                as_dict=True
+            )
+
+            if not item_details:
+                frappe.throw(f"Item Code {item_code} does not exist in the system.")
+
+            # Append the item to the items table
+            self.append("items", {
+                "item_code": item_code,
+                "item_name": item_details.get("item_name"),
+                "description": item_details.get("description"),
+                "uom": item_details.get("stock_uom"),
+                "qty": qty
+            })
 
     @frappe.whitelist()
     def create_delivery_note(self):  
