@@ -163,7 +163,7 @@ class DriverConsignmentNote(Document):
         else:
             frappe.throw("Check Consignment Note Info!")
 
-    def on_update(self):
+    def before_submit(self):
         self.refresh_items_from_crates()
 
     def refresh_items_from_crates(self):
