@@ -163,47 +163,48 @@ class DriverConsignmentNote(Document):
         else:
             frappe.throw("Check Consignment Note Info!")
 
-    def before_save(self):
-        self.refresh_items_from_crates()
+    # def before_save(self):
+    #     self.refresh_items_from_crates()
 
-    def refresh_items_from_crates(self):
-        items_summary = {}
+    # def refresh_items_from_crates(self):
+    #     items_summary = {}
 
-        # Iterate through the crates table and aggregate quantities by item_code
-        if self.crates:
-            for crate in self.crates:
-                item_code = crate.get("item_code")
-                qty = crate.get("qty", 0)
+    #     # Iterate through the crates table and aggregate quantities by item_code
+    #     if self.crates:
+    #         for crate in self.crates:
+    #             item_code = crate.get("item_code")
+    #             qty = crate.get("qty", 0)
 
-                if item_code not in items_summary:
-                    items_summary[item_code] = 0
-                items_summary[item_code] += qty
+    #             if item_code not in items_summary:
+    #                 items_summary[item_code] = 0
+    #             items_summary[item_code] += qty
 
-        # Update existing items or append new ones
-        for item_code, qty in items_summary.items():
-            existing_item = next((item for item in self.items if item.item_code == item_code), None)
+    #     # Update existing items or append new ones
+    #     for item_code, qty in items_summary.items():
+    #         existing_item = next((item for item in self.items if item.item_code == item_code), None)
 
-            if existing_item:
-                existing_item.qty = qty
-            else:
-                item_details = frappe.db.get_value(
-                    "Item",
-                    item_code,
-                    ["item_name", "description", "stock_uom"],
-                    as_dict=True
-                )
+    #         if existing_item:
+    #             existing_item.qty = qty
+    #         else:
+    #             item_details = frappe.db.get_value(
+    #                 "Item",
+    #                 item_code,
+    #                 ["item_name", "description", "stock_uom"],
+    #                 as_dict=True
+    #             )
 
-                if not item_details:
-                    frappe.throw(f"Item Code {item_code} does not exist in the system.")
+    #             if not item_details:
+    #                 frappe.throw(f"Item Code {item_code} does not exist in the system.")
 
-                # Append the new item to the items table
-                self.append("items", {
-                    "item_code": item_code,
-                    "item_name": item_details.get("item_name"),
-                    "description": item_details.get("description"),
-                    "uom": item_details.get("stock_uom"),
-                    "qty": qty
-                })
+    #             # Append the new item to the items table
+    #             self.append("items", {
+    #                 "item_code": item_code,
+    #                 "item_name": item_details.get("item_name"),
+    #                 "description": item_details.get("description"),
+    #                 "uom": item_details.get("stock_uom"),
+    #                 "qty": qty
+    #             })
+    
     @frappe.whitelist()
     def create_delivery_note(self):  
         if self.get("docstatus")==1:
