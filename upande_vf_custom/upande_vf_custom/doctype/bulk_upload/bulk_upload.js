@@ -211,6 +211,116 @@ function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
     frm.save()
 }
 
+function processIPZARDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_zar_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPEURDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_eur_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPGBPDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_gbp_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_rwf_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+
+
 function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'mpesa_bulk_upload_items'; // Update this with the actual field name of your child table
 
