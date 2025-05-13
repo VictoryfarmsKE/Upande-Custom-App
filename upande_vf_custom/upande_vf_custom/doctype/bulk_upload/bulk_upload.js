@@ -87,8 +87,11 @@ function processEFTDraftPayments(frm, draftPymnts) {
             existingPymnts.add(dp.name);
         }
     });
-        
-    frm.refresh_field(childTableField); 
+ 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
     frm.save()
 }
 
@@ -132,7 +135,10 @@ function processRTGSNCBADraftPayments(frm, draftPymnts) {
     });
     
     
-    frm.refresh_field(childTableField); 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount') 
     frm.save()
 }
 function processRTGSStanbicDraftPayments(frm, draftPymnts) {
@@ -153,7 +159,10 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts) {
     });
     
     
-    frm.refresh_field(childTableField); 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount') 
     frm.save()
 }
 
