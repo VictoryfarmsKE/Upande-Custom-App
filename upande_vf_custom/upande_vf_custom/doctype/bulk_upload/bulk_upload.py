@@ -124,7 +124,7 @@ class BulkUpload(Document):
         self.international_payments_bulk_upload_items = []
 
         draft_payments = frappe.db.get_all('Payment Entry', filters={
-            'status': ['in', ['Draft']],
+            'status': ['in', 'Draft'],
             'payment_type': 'Pay',
             "custom_upload_type": self.type
         }, fields=['name', 'party', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
