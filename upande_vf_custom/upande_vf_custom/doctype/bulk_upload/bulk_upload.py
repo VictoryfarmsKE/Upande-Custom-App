@@ -126,15 +126,15 @@ class BulkUpload(Document):
         draft_payments = frappe.db.get_all('Payment Entry', filters={
             'status': ['in', 'Draft'],
             'payment_type': 'Pay',
-            "custom_upload_type": self.type
+            'custom_upload_type': self.type
         }, fields=['name', 'party', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
-        
+
         total_grand_total = 0
         
         if draft_payments:
             for pymnt in draft_payments:
                 # if pymnt.get("custom_upload_type") in ["EFT", "RTGS", "International Payments"]:
-                if pymnt.get("custom_upload_type") in ["EFT", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
+                if pymnt.get("custom_upload_type") in ["EFT","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
                     if pymnt.get("party_bank_account"):
                         
                         bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')

@@ -56,7 +56,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "\nMpesa\nEFT\nRTGS\nInternational Payments\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
+   "options": "\nMpesa\nEFT\nRTGS\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
    "reqd": 1
   },
   {
@@ -75,8 +75,7 @@
    "fieldname": "rtgs_bulk_upload_items",
    "fieldtype": "Table",
    "label": "RTGS Bulk Upload Items",
-   "options": "RTGS Bulk Upload Item",
-   "hidden": 1
+   "options": "RTGS Bulk Upload Item"
   },
   {
     "depends_on": "eval:doc.type==\"RTGS NCBA\"",
@@ -100,11 +99,18 @@
    "options": "EFT Bulk Upload Item"
   },
   {
-   "depends_on": "eval:doc.type==\"International Payments USD\"",
+   "depends_on": "eval:doc.type==\"International Payments\"",
    "fieldname": "international_payments_bulk_upload_items",
    "fieldtype": "Table",
    "label": "International Payments Bulk Upload Items",
    "options": "International Payments Bulk Upload Item"
+  },
+  {
+   "depends_on": "eval:doc.type==\"International Payments USD\"",
+   "fieldname": "international_payments_usd_bulk_upload_items",
+   "fieldtype": "Table",
+   "label": "International Payments USD Bulk Upload Items",
+   "options": "International Payments USD Bulk Upload Item"
   },
   {
     "depends_on": "eval:doc.type==\"International Payments ZAR\"",

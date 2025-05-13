@@ -71,7 +71,7 @@ frappe.ui.form.on('Bulk Upload', {
 });
 
 
-function processEFTDraftPayments(frm, draftPymnts) {
+function processEFTDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'eft_bulk_upload_items';
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
@@ -117,7 +117,7 @@ function processEFTDraftPayments(frm, draftPymnts) {
 //     frm.save()
 // }
 
-function processRTGSNCBADraftPayments(frm, draftPymnts) {
+function processRTGSNCBADraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'rtgs_ncba_bulk_upload_items'; 
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
@@ -141,7 +141,7 @@ function processRTGSNCBADraftPayments(frm, draftPymnts) {
     frm.refresh_field('custom_total_amount') 
     frm.save()
 }
-function processRTGSStanbicDraftPayments(frm, draftPymnts) {
+function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'rtgs_stanbic_bulk_upload_items'; 
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
@@ -194,7 +194,7 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts) {
 // }
 
 function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
-    const childTableField = 'international_payments_bulk_upload_items';
+    const childTableField = 'international_payments_usd_bulk_upload_items';
 
     // Create a set of existing entries to check for duplicates
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
