@@ -11,7 +11,7 @@ frappe.ui.form.on('Bulk Upload', {
             callback: (r) => {
                 if (r.message) {
                     if(frm.doc.type=="EFT"){
-                        processEFTDraftPayments(frm, r.message.draft_payments);
+                        processEFTDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
                     // else if(frm.doc.type=="RTGS"){
                     //     processRTGSDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);

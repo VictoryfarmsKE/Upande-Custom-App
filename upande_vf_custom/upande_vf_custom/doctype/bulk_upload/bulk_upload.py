@@ -59,8 +59,8 @@ class BulkUpload(Document):
         #                 p_entry.submit()
                         
         elif self.type == 'International Payments USD':
-            if self.international_payments_bulk_upload_items:
-                for item in self.international_payments_bulk_upload_items:
+            if self.international_payments_usd_bulk_upload_items:
+                for item in self.international_payments_usd_bulk_upload_items:
                     p_entry = frappe.get_doc("Payment Entry", item.reference)
                     if p_entry.docstatus==0:
                         p_entry.custom_cash_flow_period = self.cash_flow_period
@@ -116,12 +116,12 @@ class BulkUpload(Document):
         # self.rtgs_bulk_upload_items = []
         self.rtgs_ncba_bulk_upload_items = []
         self.rtgs_stanbic_bulk_upload_items = []
-        # self.international_payments_usd_bulk_upload_items = []
+        self.international_payments_usd_bulk_upload_items = []
         self.international_payments_zar_bulk_upload_items = []
         self.international_payments_eur_bulk_upload_items = []
         self.international_payments_gbp_bulk_upload_items = []
         self.international_payments_rwf_bulk_upload_items = []
-        self.international_payments_bulk_upload_items = []
+        # self.international_payments_bulk_upload_items = []
 
         draft_payments = frappe.db.get_all('Payment Entry', filters={
             'status': ['in', 'Draft'],
