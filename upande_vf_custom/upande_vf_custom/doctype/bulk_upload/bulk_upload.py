@@ -8,9 +8,19 @@ from frappe.model.document import Document
 
 class BulkUpload(Document):
     def before_submit(self):
-        if self.type == "EFT":
-            if self.eft_bulk_upload_items:
-                for item in self.eft_bulk_upload_items:
+        if self.type == "EFT NCBA":
+            if self.eft_ncba_bulk_upload_items:
+                for item in self.eft_ncba_bulk_upload_items:
+                    p_entry = frappe.get_doc("Payment Entry", item.payment_reference)
+                    if p_entry.docstatus==0:
+                        p_entry.custom_cash_flow_period = self.cash_flow_period
+
+                        p_entry.save()
+                        p_entry.submit()
+                        
+        elif self.type == "EFT STANBIC BANK":
+            if self.eft_stanbic_bulk_upload_items:
+                for item in self.eft_stanbic_bulk_upload_items:
                     p_entry = frappe.get_doc("Payment Entry", item.payment_reference)
                     if p_entry.docstatus==0:
                         p_entry.custom_cash_flow_period = self.cash_flow_period
@@ -112,7 +122,9 @@ class BulkUpload(Document):
     def get_pending_payments(self):
         pymnts_list = []
         self.mpesa_bulk_upload_items = []
-        self.eft_bulk_upload_items = []
+        # self.eft_bulk_upload_items = []
+        self.eft_ncba_bulk_upload_items = []
+        self.eft_stanbic_bulk_upload_items = []
         # self.rtgs_bulk_upload_items = []
         self.rtgs_ncba_bulk_upload_items = []
         self.rtgs_stanbic_bulk_upload_items = []
@@ -134,7 +146,7 @@ class BulkUpload(Document):
         if draft_payments:
             for pymnt in draft_payments:
                 # if pymnt.get("custom_upload_type") in ["EFT", "RTGS", "International Payments"]:
-                if pymnt.get("custom_upload_type") in ["EFT","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
+                if pymnt.get("custom_upload_type") in ["EFT NCBA","EFT STANBIC BANK","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
                     if pymnt.get("party_bank_account"):
                         
                         bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')

@@ -56,7 +56,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "\nMpesa\nEFT\nRTGS\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
+   "options": "\nMpesa\nEFT\nEFT NCBA\nEFT STANBIC BANK\nRTGS\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
    "reqd": 1
   },
   {

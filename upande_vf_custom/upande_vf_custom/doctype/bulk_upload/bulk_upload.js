@@ -10,8 +10,11 @@ frappe.ui.form.on('Bulk Upload', {
             freeze: true,
             callback: (r) => {
                 if (r.message) {
-                    if(frm.doc.type=="EFT"){
-                        processEFTDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    if(frm.doc.type=="EFT NCBA"){
+                        processEFTNCBADraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                     if(frm.doc.type=="EFT STANBIC BANK"){
+                        processEFTStanbicDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
                     // else if(frm.doc.type=="RTGS"){
                     //     processRTGSDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
@@ -71,8 +74,32 @@ frappe.ui.form.on('Bulk Upload', {
 });
 
 
-function processEFTDraftPayments(frm, draftPymnts, total_grand_total) {
-    const childTableField = 'eft_bulk_upload_items';
+function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'eft_ncba_bulk_upload_items';
+
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name; 
+            newRow.beneficiary_name = dp.party;
+            newRow.bank_account = dp.party_bank_account;
+            newRow.reference = dp.reference_no
+            newRow.bank = dp.bank_name
+            newRow.amount = dp.paid_amount;
+            existingPymnts.add(dp.name);
+        }
+    });
+ 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'eft_stanbic_bulk_upload_items';
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
     draftPymnts.forEach(dp => {

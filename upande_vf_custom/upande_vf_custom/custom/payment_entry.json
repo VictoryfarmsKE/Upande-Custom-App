@@ -410,7 +410,7 @@
    "name": "Payment Entry-custom_upload_type",
    "no_copy": 0,
    "non_negative": 0,
-   "options": "Cash\nMpesa\nEFT\nRTGS\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
+   "options": "Cash\nMpesa\nEFT\nEFT NCBA\nEFT STANBIC BANK\nRTGS\nRTGS NCBA\nRTGS STANBIC BANK\nInternational Payments\nInternational Payments USD\nInternational Payments ZAR\nInternational Payments EUR\nInternational Payments GBP\nInternational Payments RWF",
    "owner": "Administrator",
    "permlevel": 0,
    "precision": "",
