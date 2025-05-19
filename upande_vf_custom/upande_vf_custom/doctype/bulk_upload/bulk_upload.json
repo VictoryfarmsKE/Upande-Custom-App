@@ -98,6 +98,20 @@
    "label": "EFT Bulk Upload Items",
    "options": "EFT Bulk Upload Item"
   },
+   {
+   "depends_on": "eval:doc.type==\"EFT NCBA\"",
+   "fieldname": "eft_ncba_bulk_upload_items",
+   "fieldtype": "Table",
+   "label": "EFT NCBA Bulk Upload Items",
+   "options": "EFT NCBA Bulk Upload Item"
+  },
+   {
+   "depends_on": "eval:doc.type==\"EFT STANBIC BANK\"",
+   "fieldname": "eft_stanbic_bulk_upload_items",
+   "fieldtype": "Table",
+   "label": "EFT STANBIC BANK Bulk Upload Items",
+   "options": "EFT STANBIC BANK Bulk Upload Item"
+  },
   {
    "depends_on": "eval:doc.type==\"International Payments\"",
    "fieldname": "international_payments_bulk_upload_items",
