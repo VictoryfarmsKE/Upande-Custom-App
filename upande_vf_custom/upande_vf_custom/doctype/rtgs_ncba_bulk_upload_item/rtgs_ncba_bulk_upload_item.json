@@ -104,10 +104,11 @@
   },
   {
    "fieldname": "amount",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -131,7 +132,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-08 12:32:35.742271",
+ "modified": "2025-05-20 10:27:47.684920",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "RTGS NCBA Bulk Upload Item",
