@@ -4,6 +4,11 @@
 
 frappe.query_reports["International Payments USD Bank Bulk Upload"] = {
 	"filters": [
-
+		{
+			fieldname: 'parent',
+			label: 'Parent',
+			fieldtype: 'Data',
+			read_only: 1,
+		},
 	]
 };

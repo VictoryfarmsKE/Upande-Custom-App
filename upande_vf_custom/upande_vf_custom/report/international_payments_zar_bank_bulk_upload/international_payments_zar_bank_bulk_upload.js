@@ -4,6 +4,11 @@
 
 frappe.query_reports["International Payments ZAR Bank Bulk Upload"] = {
 	"filters": [
-
+		{
+			fieldname: 'parent',
+			label: 'Parent',
+			fieldtype: 'Data',
+			read_only: 1,
+		},
 	]
 };
