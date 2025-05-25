@@ -24,9 +24,9 @@ def get_data(filters):
                 swift_code,
                 currency             
             FROM
-                `tabRTGS STANBIC BANK Bulk Upload Item`
+                `tabRTGS Stanbic Bank Bulk Upload Item`
             WHERE
-                `tabRTGS STANBIC BANK Bulk Upload Item`.parent = %(parent)s
+                `tabRTGS Stanbic Bank Bulk Upload Item`.parent = %(parent)s
             """
             
     # Use the frappe.db.sql method to execute the query safely
