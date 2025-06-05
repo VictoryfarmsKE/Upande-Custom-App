@@ -770,6 +770,11 @@ def make_in_transit_stock_entry(source_name, in_transit_warehouse):
 @frappe.whitelist()
 def make_purchase_request_from_material_issue(source_name, target_doc=None):
     """Create a new Purchase Requisition Form from a Material Issue, for items where actual_qty < qty."""
+    source_doc = frappe.get_doc("Requisition Form", source_name)
+    filtered_items = [item for item in source_doc.items if flt(item.actual_qty) < flt(item.qty)]
+    if not filtered_items:
+        frappe.throw(_("Items actual quantity is more than than quantity set for issue."))
+
     def postprocess(source, target_doc):
         target_doc.material_request_type = "Purchase"
         target_doc.company = source.company
