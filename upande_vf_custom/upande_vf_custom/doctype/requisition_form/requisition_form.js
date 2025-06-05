@@ -15,7 +15,8 @@ frappe.ui.form.on('Requisition Form', {
 			'Request for Quotation': 'Request for Quotation',
 			'Supplier Quotation': 'Supplier Quotation',
 			'Work Order': 'Work Order',
-			'Purchase Receipt': 'Purchase Receipt'
+			'Purchase Receipt': 'Purchase Receipt',
+			"Purchase Request": "Requisition Form"
 		};
 
 		// formatter for material request item
@@ -127,6 +128,9 @@ frappe.ui.form.on('Requisition Form', {
 				if (frm.doc.material_request_type === "Material Issue") {
 					frm.add_custom_button(__("Issue Material"),
 						() => frm.events.make_stock_entry(frm), __('Create'));
+
+					// Add Purchase Request button under Create for Material Issue
+					frm.add_custom_button(__("Purchase Request"),() => frm.events.make_purchase_request_from_material_issue(frm), __('Create'));
 				}
 
 				if (frm.doc.material_request_type === "Customer Provided") {
@@ -338,6 +342,13 @@ frappe.ui.form.on('Requisition Form', {
 			frm: frm
 		});
 	},
+
+	make_purchase_request_from_material_issue: function(frm) {
+		frappe.model.open_mapped_doc({
+            method: "upande_vf_custom.upande_vf_custom.doctype.requisition_form.requisition_form.make_purchase_request_from_material_issue",
+            frm: frm
+        });
+	},	
 
 	make_in_transit_stock_entry(frm) {
 		frappe.prompt(
