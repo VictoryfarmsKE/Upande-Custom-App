@@ -10,13 +10,38 @@ frappe.ui.form.on('Bulk Upload', {
             freeze: true,
             callback: (r) => {
                 if (r.message) {
-                    if(frm.doc.type=="EFT"){
-                        processEFTDraftPayments(frm, r.message.draft_payments);
-                    }else if(frm.doc.type=="RTGS"){
-                        processRTGSDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    if(frm.doc.type=="EFT NCBA"){
+                        processEFTNCBADraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
-                    else if(frm.doc.type=="International Payments"){
-                        processIPDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                     if(frm.doc.type=="EFT STANBIC BANK"){
+                        processEFTStanbicDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    // else if(frm.doc.type=="RTGS"){
+                    //     processRTGSDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    // }
+                    // else if(frm.doc.type=="International Payments"){
+                    //     processIPDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    // }
+                    else if(frm.doc.type=="RTGS NCBA"){
+                        processRTGSNCBADraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="RTGS STANBIC BANK"){
+                        processRTGSStanbicDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="International Payments USD"){
+                        processIPUSDDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="International Payments ZAR"){
+                        processIPZARDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="International Payments EUR"){
+                        processIPEURDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="International Payments GBP"){
+                        processIPGBPDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
+                    else if(frm.doc.type=="International Payments RWF"){
+                        processIPRWFDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
                     else if(frm.doc.type=="Mpesa"){
                         processMpesaDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
@@ -49,8 +74,8 @@ frappe.ui.form.on('Bulk Upload', {
 });
 
 
-function processEFTDraftPayments(frm, draftPymnts) {
-    const childTableField = 'eft_bulk_upload_items';
+function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'eft_ncba_bulk_upload_items';
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
     draftPymnts.forEach(dp => {
@@ -65,13 +90,62 @@ function processEFTDraftPayments(frm, draftPymnts) {
             existingPymnts.add(dp.name);
         }
     });
-        
-    frm.refresh_field(childTableField); 
+ 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
     frm.save()
 }
 
-function processRTGSDraftPayments(frm, draftPymnts) {
-    const childTableField = 'rtgs_bulk_upload_items'; 
+function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'eft_stanbic_bulk_upload_items';
+
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name; 
+            newRow.beneficiary_name = dp.party;
+            newRow.bank_account = dp.party_bank_account;
+            newRow.reference = dp.reference_no
+            newRow.bank = dp.bank_name
+            newRow.amount = dp.paid_amount;
+            existingPymnts.add(dp.name);
+        }
+    });
+ 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+// function processRTGSDraftPayments(frm, draftPymnts) {
+//     const childTableField = 'rtgs_bulk_upload_items'; 
+
+//     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
+//     draftPymnts.forEach(dp => {
+//          if (!existingPymnts.has(dp.name)) {
+//             let newRow = frm.add_child(childTableField);
+//             newRow.payment_reference = dp.name; 
+//             newRow.beneficiary_name = dp.party;
+//             newRow.bank_account = dp.party_bank_account;
+//             newRow.reference = dp.reference_no
+//             newRow.bank = dp.bank_name
+//             newRow.amount = dp.paid_amount;
+//             existingPymnts.add(dp.name);
+//         }
+//     });
+    
+    
+//     frm.refresh_field(childTableField); 
+//     frm.save()
+// }
+
+function processRTGSNCBADraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'rtgs_ncba_bulk_upload_items'; 
 
     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
     draftPymnts.forEach(dp => {
@@ -88,15 +162,69 @@ function processRTGSDraftPayments(frm, draftPymnts) {
     });
     
     
-    frm.refresh_field(childTableField); 
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount') 
+    frm.save()
+}
+function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'rtgs_stanbic_bulk_upload_items'; 
+
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name; 
+            newRow.beneficiary_name = dp.party;
+            newRow.bank_account = dp.party_bank_account;
+            newRow.reference = dp.reference_no
+            newRow.bank = dp.bank_name
+            newRow.amount = dp.paid_amount;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount') 
     frm.save()
 }
 
-function processIPDraftPayments(frm, draftPymnts, grand_totals) {
-    const childTableField = 'international_payments_bulk_upload_items'; // Update this with the actual field name of your child table
+// function processIPDraftPayments(frm, draftPymnts, total_grand_total) {
+//     const childTableField = 'international_payments_bulk_upload_items'; // Update this with the actual field name of your child table
+
+//     // Create a set of existing entries to check for duplicates
+//     const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); // Assuming 'payment_reference' is a field in the child table
+//     draftPymnts.forEach(dp => {
+//          if (!existingPymnts.has(dp.name)) {
+//             let newRow = frm.add_child(childTableField);
+//             newRow.payment_reference = dp.name;
+//             newRow.beneficiary_name = dp.party; 
+//             newRow.beneficiary_account = dp.bank_account;
+//             newRow.reference = dp.name;
+//             newRow.beneficiary_email_id = dp.contact_email;
+//             newRow.debit_amount = dp.paid_amount;
+//             newRow.swift_code = dp.swift_code;
+//             newRow.payment_type = dp.custom_upload_type;
+//             existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
+//         }
+//     });
+    
+//     frm.doc.custom_total_amount = total_grand_total
+    
+//     frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
+//     frm.refresh_field('custom_total_amount')
+//     frm.save()
+// }
+
+function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_usd_bulk_upload_items';
 
     // Create a set of existing entries to check for duplicates
-    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); // Assuming 'payment_reference' is a field in the child table
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
     draftPymnts.forEach(dp => {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
@@ -108,17 +236,128 @@ function processIPDraftPayments(frm, draftPymnts, grand_totals) {
             newRow.debit_amount = dp.paid_amount;
             newRow.swift_code = dp.swift_code;
             newRow.payment_type = dp.custom_upload_type;
-            existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
+            existingPymnts.add(dp.name);
         }
     });
     
-    frm.doc.total_amount = grand_totals
+    frm.doc.custom_total_amount = total_grand_total
     
-    frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
-    frm.refresh_field('total_amount')
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
     frm.save()
 }
-function processMpesaDraftPayments(frm, draftPymnts, grand_totals) {
+
+function processIPZARDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_zar_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPEURDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_eur_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPGBPDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_gbp_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'international_payments_rwf_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
+
+
+
+function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'mpesa_bulk_upload_items'; // Update this with the actual field name of your child table
 
     // Create a set of existing entries to check for duplicates
@@ -135,9 +374,9 @@ function processMpesaDraftPayments(frm, draftPymnts, grand_totals) {
         }
     });
     
-    frm.doc.total_amount = grand_totals
+    frm.doc.custom_total_amount = total_grand_total
     
     frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
-    frm.refresh_field('total_amount')
+    frm.refresh_field('custom_total_amount')
     frm.save()
 }

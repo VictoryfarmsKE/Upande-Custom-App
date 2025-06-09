@@ -85,10 +85,11 @@
   },
   {
    "fieldname": "amount",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Amount",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -125,7 +126,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-30 15:29:30.947342",
+ "modified": "2025-05-20 10:32:03.396566",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "Bulk Upload Item",
