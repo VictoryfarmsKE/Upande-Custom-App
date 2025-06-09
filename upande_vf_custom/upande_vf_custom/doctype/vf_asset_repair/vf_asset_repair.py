@@ -8,11 +8,11 @@ from frappe.utils import add_months, cint, flt, get_link_to_form, getdate, time_
 import erpnext
 from erpnext.accounts.general_ledger import make_gl_entries
 from erpnext.assets.doctype.asset.asset import get_asset_account
-# from erpnext.assets.doctype.asset_activity.asset_activity import add_asset_activity
-# from erpnext.assets.doctype.asset_depreciation_schedule.asset_depreciation_schedule import (
-# 	get_depr_schedule,
-# 	make_new_active_asset_depr_schedules_and_cancel_current_ones,
-# )
+from erpnext.assets.doctype.asset_activity.asset_activity import add_asset_activity
+from erpnext.assets.doctype.asset_depreciation_schedule.asset_depreciation_schedule import (
+	get_depr_schedule,
+	make_new_active_asset_depr_schedules_and_cancel_current_ones,
+)
 from erpnext.controllers.accounts_controller import AccountsController
 
 
@@ -25,9 +25,9 @@ class VFAssetRepair(AccountsController):
     if TYPE_CHECKING:
         from frappe.types import DF
 
-        # from erpnext.assets.doctype.asset_repair_consumed_item.asset_repair_consumed_item import (
-        # 	AssetRepairConsumedItem,
-        # )
+        from erpnext.assets.doctype.asset_repair_consumed_item.asset_repair_consumed_item import (
+        	AssetRepairConsumedItem,
+        )
 
         from upande_vf_custom.upande_vf_custom.doctype.vf_asset_repair_consumed_item.vf_asset_repair_consumed_item import (
             VFAssetRepairConsumedItem,
@@ -78,12 +78,12 @@ class VFAssetRepair(AccountsController):
     def update_status(self):
         if self.repair_status == "Pending" and self.asset_doc.status != "Out of Order":
             frappe.db.set_value("Asset", self.asset, "status", "Out of Order")
-            # add_asset_activity(
-            # 	self.asset,
-            # 	_("Asset out of order due to Asset Repair {0}").format(
-            # 		get_link_to_form("Asset Repair", self.name)
-            # 	),
-            # )
+            add_asset_activity(
+            	self.asset,
+            	_("Asset out of order due to Asset Repair {0}").format(
+            		get_link_to_form("Asset Repair", self.name)
+            	),
+            )
         else:
             self.asset_doc.set_status()
 
