@@ -13,22 +13,23 @@ def get_data(filters):
     parent = filters.get("parent")
     query = """
             SELECT
-                "reference",
-				"debit_amount",
-				"payment_type",
-				"beneficiary_name",
-				"beneficiary_account",
-				"network_type",
-				"swift_code",
-				"beneficiary_email_id",
-				"beneficiary_address_1",
-				"beneficiary_address_2",
-				"beneficiary_address_3",
-				"beneficiary_address_4",
-				"charge_bearer",
-				"debit_narrative",
-				"credit_narrative",
-				"deal_reference_number"             
+                `reference`,
+                `debit_amount`,
+                `payment_type`,
+                `beneficiary_name`,
+                `beneficiary_account`,
+                `network_type`,
+                `swift_code`,
+                `beneficiary_email_id`,
+                `beneficiary_address_1`,
+                `beneficiary_address_2`,
+                `beneficiary_address_3`,
+                `beneficiary_address_4`,
+                `charge_bearer`,
+                `debit_narrative`,
+                `credit_narrative`,
+                `deal_reference_number`,
+                `name`
             FROM
                 `tabInternational Payments Bulk Upload Item`
             WHERE
@@ -44,7 +45,7 @@ def get_columns(filters=None):
     columns = [
         {"label": "Payment Reference", "fieldname": "reference","fieldtype": "Data", "width": 150, "align": "center"},
         {"label": "Debit Amount", "fieldname": "debit_amount", "fieldtype": "float", "width": 150, "align": "center"},
-        {"label": "Payment Type", "fieldname": "payment_type", "fieldtype": "Data", "width": 80, "align": "center"},
+        {"label": "Payment Type", "fieldname": "payment_type", "fieldtype": "Data", "width": 200, "align": "center"},
         {"label": "Beneficiary Name", "fieldname": "beneficiary_name", "fieldtype": "Data", "width": 200, "align": "center"},
         {"label": "Beneficiary Account", "fieldname": "beneficiary_account", "fieldtype": "Data", "width": 200, "align": "center"},
         {"label": "Network Type", "fieldname": "network_type", "fieldtype": "Data", "width": 200, "align": "center"},

@@ -13,16 +13,18 @@
   "customer",
   "customer_name",
   "customer_address",
+  "selling_price_list",
   "column_break_5f3hx",
   "lc_manager",
   "delivery_date",
+  "pos_profile",
   "sales_order_number",
   "cost_center",
+  "variance_warehouse",
   "section_break_3",
   "driver",
-  "driver_name",
   "column_break_4",
-  "vehicle",
+  "driver_name",
   "delivered",
   "warehouses_section",
   "from_warehouse",
@@ -115,14 +117,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "vehicle",
-   "fieldtype": "Link",
-   "label": "Vehicle",
-   "mandatory_depends_on": "eval:!doc.__islocal",
-   "options": "Vehicle",
-   "permlevel": 2
-  },
-  {
    "fieldname": "warehouses_section",
    "fieldtype": "Section Break",
    "label": "Warehouses"
@@ -140,13 +134,11 @@
   },
   {
    "fetch_from": "vehicle.custom_warehouse",
-   "fetch_if_empty": 1,
    "fieldname": "truck_warehouse",
    "fieldtype": "Link",
    "label": "Truck Warehouse",
    "mandatory_depends_on": "eval:!doc.__islocal",
-   "options": "Warehouse",
-   "read_only": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "section_break_zpntz",
@@ -206,11 +198,36 @@
    "label": "Customer Address",
    "options": "Address",
    "read_only": 1
+  },
+  {
+   "fieldname": "variance_warehouse",
+   "fieldtype": "Link",
+   "label": "Variance Warehouse",
+   "mandatory_depends_on": "eval:!doc.__islocal",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "label": "POS Profile",
+   "options": "POS Profile"
+  },
+  {
+   "fieldname": "selling_price_list",
+   "fieldtype": "Link",
+   "label": "Selling Price List",
+   "options": "Price List",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
- "links": [],
- "modified": "2024-10-03 20:49:51.670085",
+ "links": [
+  {
+   "link_doctype": "Delivery Note",
+   "link_fieldname": "custom_driver_consignment_note_number"
+  }
+ ],
+ "modified": "2024-12-04 13:11:29.653482",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "Driver Consignment Note",

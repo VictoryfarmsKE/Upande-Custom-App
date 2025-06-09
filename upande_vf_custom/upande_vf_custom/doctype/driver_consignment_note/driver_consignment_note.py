@@ -17,7 +17,9 @@ class DriverConsignmentNote(Document):
         for i, q in items.items():
             for c, cq in crates.items():
                 if i == c:
-                    if not q == cq:
+                    var = q-cq
+            
+                    if var > 1 or var < -1:
                         frappe.throw("Quantity {} for {} does not match quantity of {} in crates!".format(q,i,cq))
         
         
@@ -160,26 +162,70 @@ class DriverConsignmentNote(Document):
             self.stock_transfer_number = new_stck_entry.name
         else:
             frappe.throw("Check Consignment Note Info!")
-    
 
+    # def before_save(self):
+    #     self.refresh_items_from_crates()
+
+    # def refresh_items_from_crates(self):
+    #     items_summary = {}
+
+    #     # Iterate through the crates table and aggregate quantities by item_code
+    #     if self.crates:
+    #         for crate in self.crates:
+    #             item_code = crate.get("item_code")
+    #             qty = crate.get("qty", 0)
+
+    #             if item_code not in items_summary:
+    #                 items_summary[item_code] = 0
+    #             items_summary[item_code] += qty
+
+    #     # Update existing items or append new ones
+    #     for item_code, qty in items_summary.items():
+    #         existing_item = next((item for item in self.items if item.item_code == item_code), None)
+
+    #         if existing_item:
+    #             existing_item.qty = qty
+    #         else:
+    #             item_details = frappe.db.get_value(
+    #                 "Item",
+    #                 item_code,
+    #                 ["item_name", "description", "stock_uom"],
+    #                 as_dict=True
+    #             )
+
+    #             if not item_details:
+    #                 frappe.throw(f"Item Code {item_code} does not exist in the system.")
+
+    #             # Append the new item to the items table
+    #             self.append("items", {
+    #                 "item_code": item_code,
+    #                 "item_name": item_details.get("item_name"),
+    #                 "description": item_details.get("description"),
+    #                 "uom": item_details.get("stock_uom"),
+    #                 "qty": qty
+    #             })
+    
     @frappe.whitelist()
     def create_delivery_note(self):  
         if self.get("docstatus")==1:
             dn_exists = frappe.db.exists("Delivery Note", {"custom_driver_consignment_note_number": self.name})
 
             if not dn_exists:
-                new_stck_entry = frappe.new_doc("Delivery Note")
-                new_stck_entry.company = self.get("company")
-                new_stck_entry.set_warehouse = self.get("truck_warehouse")
-                new_stck_entry.customer = self.get("customer")
-                new_stck_entry.customer_name = self.get("customer_name")
-                new_stck_entry.cost_center = self.get("cost_center")
-                new_stck_entry.driver = self.get("driver")
-                new_stck_entry.vehicle_no = self.get("vehicle")
-                new_stck_entry.custom_driver_consignment_note_number = self.name
+                new_d_note = frappe.new_doc("Delivery Note")
+                new_d_note.company = self.get("company")
+                new_d_note.set_warehouse = self.get("truck_warehouse")
+                new_d_note.customer = self.get("customer")
+                new_d_note.selling_price_list = self.selling_price_list
+                new_d_note.pos_profile = self.pos_profile
+                new_d_note.customer_name = self.get("customer_name")
+                new_d_note.cost_center = self.get("cost_center")
+                new_d_note.driver = self.get("driver")
+                new_d_note.vehicle_no = self.get("vehicle")
+                new_d_note.custom_driver_consignment_note_number = self.name
+                new_d_note.custom_variance_warehouse = self.variance_warehouse
                 
                 for item in self.get("items"):
-                    new_stck_entry.append("items", {
+                    new_d_note.append("items", {
                         "item_code": item.get("item_code"),
                         "qty": item.get("qty"),
                         "description":item.get("description"),
@@ -193,12 +239,12 @@ class DriverConsignmentNote(Document):
                         "amount": item.get("amount"),
                     })
                     
-                new_stck_entry.save()
+                new_d_note.save()
                 
                 self.delivered = 1
                 self.save()
                 
-                frappe.response['message'] = new_stck_entry    
+                frappe.response['message'] = new_d_note 
             else:
                 frappe.throw("Delivery Note {} exists for {}".format(dn_exists, self.name))
         else:

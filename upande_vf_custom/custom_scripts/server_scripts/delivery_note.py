@@ -1,6 +1,13 @@
 import frappe
+from frappe import _
 
 def on_submit(doc, method):
+    # Check if there are any attachments linked to the document
+    attachments = frappe.get_all('File', filters={'attached_to_doctype': doc.doctype, 'attached_to_name': doc.name})
+    
+    if not attachments:
+        frappe.throw(_("Please Attach a Reference Document."))
+
     if doc.set_warehouse and doc.custom_driver_consignment_note_number:
         create_sales_invoice(doc)
         
@@ -9,16 +16,22 @@ def on_submit(doc, method):
         move_variance_to_wh(doc.custom_driver_consignment_note_number, doc.custom_variance_warehouse, doc.set_warehouse, doc.company, doc.cost_center, variance_list)
         
 def create_sales_invoice(doc):
-    new_stck_entry = frappe.new_doc("Sales Invoice")
-    new_stck_entry.company = doc.get("company")
-    new_stck_entry.customer = doc.get("customer")
-    new_stck_entry.cost_center = doc.get("cost_center")
+    new_sinv = frappe.new_doc("Sales Invoice")
+    new_sinv.company = doc.get("company")
+    new_sinv.customer = doc.get("customer")
+    new_sinv.custom_is_credit_sale = 1
+    new_sinv.selling_price_list = doc.selling_price_list
+    new_sinv.set_posting_time = 1
+    new_sinv.posting_date = doc.posting_date
+    new_sinv.pos_profile = doc.get("pos_profile")
+    new_sinv.cost_center = doc.get("cost_center")
     
     for item in doc.items:
-        new_stck_entry.append("items", {
+        new_sinv.append("items", {
             "item_code": item.get("item_code"),
             "qty": item.get("qty"),
             "item_name":item.get("item_name"),
+            "pos_profile": doc.get("pos_profile"),
             "description":item.get("description"),
             "cost_center": item.get("cost_center"),
             "sales_order": item.get("against_sales_order"),
@@ -26,9 +39,9 @@ def create_sales_invoice(doc):
             "delivery_note": doc.get("name")
         })
         
-    new_stck_entry.save()
+    new_sinv.save()
     
-    new_stck_entry.submit()
+    new_sinv.submit()
         
 def get_dn_items(doc):
     dn_items = []
@@ -72,31 +85,33 @@ def variance_due_to_water_loss(doc):
                         "uom": item.get("uom"),
                         "variance": float(stck.get("qty")) - float(item.get("qty"))
                     }
-                    
-                    if not variance in variance_list:
-                        variance_list.append(variance)
+                    if float(stck.get("qty")) - float(item.get("qty")):
+                        if not variance in variance_list:
+                            variance_list.append(variance)
+
     return variance_list
                         
 def move_variance_to_wh(c_no, variance_warehouse, s_warehouse, company, cost_center, variance_list):
-    new_stk_entry = frappe.new_doc("Stock Entry")
-    new_stk_entry.company = company
-    new_stk_entry.cost_center = cost_center
-    new_stk_entry.custom_consignment_note = c_no
-    new_stk_entry.from_warehouse = s_warehouse
-    new_stk_entry.to_warehouse = variance_warehouse
-    
-    for item in variance_list:
-        if float(item.get("variance")) > 0:
-            new_stk_entry.append("items",{
-                "item_code": item.get("item_code"),
-                "qty": item.get("variance"),
-                "uom": item.get("uom")
-            })
+    if len(variance_list):
+        new_stk_entry = frappe.new_doc("Stock Entry")
+        new_stk_entry.company = company
+        new_stk_entry.cost_center = cost_center
+        new_stk_entry.custom_consignment_note = c_no
+        new_stk_entry.from_warehouse = s_warehouse
+        new_stk_entry.to_warehouse = variance_warehouse
         
-    new_stk_entry.save()
-    new_stk_entry.submit()
+        for item in variance_list:
+            if float(item.get("variance")) > 0:
+                new_stk_entry.append("items",{
+                    "item_code": item.get("item_code"),
+                    "qty": item.get("variance"),
+                    "uom": item.get("uom")
+                })
             
-    
+        new_stk_entry.save()
+        new_stk_entry.submit()
+                
+        
 
-    
-    
+        
+        
