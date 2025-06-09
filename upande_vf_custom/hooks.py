@@ -134,10 +134,12 @@ doctype_js = {
 # ---------------
 # Override standard doctype classes
 
-override_doctype_class = {
-		"Asset Value Adjustment": "upande_vf_custom.custom_asset_scripts.custom_asset_value_adjustment.CustomAssetValueAdjustment"
 
-}
+# comment out this section if you want to upgrade to the next version of Frappe #testfixbyNewton
+# override_doctype_class = {
+# 		"Asset Value Adjustment": "upande_vf_custom.custom_asset_scripts.custom_asset_value_adjustment.CustomAssetValueAdjustment"
+
+# }
 
 # Document Events
 # ---------------
