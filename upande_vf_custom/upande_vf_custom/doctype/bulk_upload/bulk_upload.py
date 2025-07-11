@@ -139,7 +139,7 @@ class BulkUpload(Document):
             'status': ['in', 'Draft'],
             'payment_type': 'Pay',
             'custom_upload_type': self.type
-        }, fields=['name', 'party', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
+        }, fields=['name', 'party', 'custom_account_name', 'paid_from_account_currency', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
 
         total_grand_total = 0
         

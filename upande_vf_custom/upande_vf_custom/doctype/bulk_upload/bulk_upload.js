@@ -82,7 +82,7 @@ function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
-            newRow.beneficiary_name = dp.party;
+            newRow.beneficiary_name = dp.custom_account_name;
             newRow.bank_account = dp.party_bank_account;
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
@@ -106,7 +106,7 @@ function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
-            newRow.beneficiary_name = dp.party;
+            newRow.beneficiary_name = dp.custom_account_name;
             newRow.bank_account = dp.party_bank_account;
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
@@ -130,7 +130,7 @@ function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
 //          if (!existingPymnts.has(dp.name)) {
 //             let newRow = frm.add_child(childTableField);
 //             newRow.payment_reference = dp.name; 
-//             newRow.beneficiary_name = dp.party;
+//             newRow.beneficiary_name = dp.custom_account_name;
 //             newRow.bank_account = dp.party_bank_account;
 //             newRow.reference = dp.reference_no
 //             newRow.bank = dp.bank_name
@@ -152,7 +152,7 @@ function processRTGSNCBADraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
-            newRow.beneficiary_name = dp.party;
+            newRow.beneficiary_name = dp.custom_account_name;
             newRow.bank_account = dp.party_bank_account;
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
@@ -176,7 +176,7 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
-            newRow.beneficiary_name = dp.party;
+            newRow.beneficiary_name = dp.custom_account_name;
             newRow.bank_account = dp.party_bank_account;
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
@@ -202,7 +202,7 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
 //          if (!existingPymnts.has(dp.name)) {
 //             let newRow = frm.add_child(childTableField);
 //             newRow.payment_reference = dp.name;
-//             newRow.beneficiary_name = dp.party; 
+//             newRow.beneficiary_name = dp.custom_account_name; 
 //             newRow.beneficiary_account = dp.bank_account;
 //             newRow.reference = dp.name;
 //             newRow.beneficiary_email_id = dp.contact_email;
@@ -229,7 +229,7 @@ function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name;
-            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_name = dp.custom_account_name; 
             newRow.beneficiary_account = dp.bank_account;
             newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
@@ -256,7 +256,7 @@ function processIPZARDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name;
-            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_name = dp.custom_account_name; 
             newRow.beneficiary_account = dp.bank_account;
             newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
@@ -283,7 +283,7 @@ function processIPEURDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name;
-            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_name = dp.custom_account_name; 
             newRow.beneficiary_account = dp.bank_account;
             newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
@@ -310,7 +310,7 @@ function processIPGBPDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name;
-            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_name = dp.custom_account_name; 
             newRow.beneficiary_account = dp.bank_account;
             newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
@@ -337,7 +337,7 @@ function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name;
-            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_name = dp.custom_account_name; 
             newRow.beneficiary_account = dp.bank_account;
             newRow.reference = dp.name;
             newRow.beneficiary_email_id = dp.contact_email;
@@ -366,7 +366,7 @@ function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; // Assuming 'payment_reference' is a field in the child table
-            newRow.beneficiary_name = dp.party; // Assuming 'beneficiary_name' is a field in the child table
+            newRow.beneficiary_name = dp.custom_account_name; // Assuming 'beneficiary_name' is a field in the child table
             newRow.bank_account = dp.bank_name;
             newRow.reference = dp.reference_no
             newRow.amount = dp.paid_amount; // Assuming 'amount' is a field in the child table
