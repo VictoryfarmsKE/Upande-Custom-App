@@ -42,11 +42,10 @@
   },
   {
    "fieldname": "beneficiary_name",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Beneficiary Name",
-   "options": "Supplier",
    "read_only": 1
   },
   {
@@ -82,7 +81,7 @@
    "read_only": 1
   },
   {
-   "fetch_from": "bank_account.custom_branch",
+   "fetch_from": "bank_account.branch_code",
    "fetch_if_empty": 1,
    "fieldname": "branch_code",
    "fieldtype": "Data",
@@ -102,12 +101,13 @@
   },
   {
    "fieldname": "amount",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Amount",
    "precision": "2",
-   "read_only": 1
+   "read_only": 1,
+   "options": "paid_from_account_currency"
   }
  ],
  "index_web_pages_for_search": 1,
