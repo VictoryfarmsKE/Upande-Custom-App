@@ -101,13 +101,12 @@
   },
   {
    "fieldname": "amount",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Amount",
    "precision": "2",
-   "read_only": 1,
-   "options": "paid_from_account_currency"
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,

@@ -37,10 +37,9 @@
    "fetch_from": "payment_reference.reference_no",
    "fetch_if_empty": 1,
    "fieldname": "debit_amount",
-   "fieldtype": "Currency",
+   "fieldtype": "Float",
    "label": "Debit Amount",
    "precision": "2",
-   "options": "paid_from_account_currency",
    "read_only": 1
   },
   {
