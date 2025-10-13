@@ -68,7 +68,7 @@ class DriverConsignmentNote(Document):
     def convert_to_crates(self, items_dict):
         for key, value in items_dict.items():
             conv_factor = frappe.db.get_value("UOM Conversion Factor", {"category": "Mass", "from_uom": value.get("uom"), "to_uom": "Crate"}, "value")
-            # Handle no conversion factor found
+            # Handle conversion factor is None
             if conv_factor is None:
                 conv_factor = 1
             value["crates_qty"] = value["qty"] * conv_factor
