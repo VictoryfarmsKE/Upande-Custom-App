@@ -28,6 +28,9 @@ frappe.ui.form.on('Bulk Upload', {
                     else if(frm.doc.type=="RTGS STANBIC BANK"){
                         processRTGSStanbicDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
+                    else if(frm.doc.type=="Local Payments USD"){
+                        processLocalUSDDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
+                    }
                     else if(frm.doc.type=="International Payments USD"){
                         processIPUSDDraftPayments(frm, r.message.draft_payments, r.message.total_grand_total);
                     }
@@ -219,6 +222,33 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
 //     frm.refresh_field('custom_total_amount')
 //     frm.save()
 // }
+
+function processLocalUSDDraftPayments(frm, draftPymnts, total_grand_total) {
+    const childTableField = 'local_payments_usd_bulk_upload_items';
+
+    // Create a set of existing entries to check for duplicates
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); 
+    draftPymnts.forEach(dp => {
+         if (!existingPymnts.has(dp.name)) {
+            let newRow = frm.add_child(childTableField);
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party; 
+            newRow.beneficiary_account = dp.bank_account;
+            newRow.reference = dp.name;
+            newRow.beneficiary_email_id = dp.contact_email;
+            newRow.debit_amount = dp.paid_amount;
+            newRow.swift_code = dp.swift_code;
+            newRow.payment_type = dp.custom_upload_type;
+            existingPymnts.add(dp.name);
+        }
+    });
+    
+    frm.doc.custom_total_amount = total_grand_total
+    
+    frm.refresh_field(childTableField);
+    frm.refresh_field('custom_total_amount')
+    frm.save()
+}
 
 function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'international_payments_usd_bulk_upload_items';

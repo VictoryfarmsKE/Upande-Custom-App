@@ -67,6 +67,15 @@ class BulkUpload(Document):
 
         #                 p_entry.save()
         #                 p_entry.submit()
+        elif self.type == 'Local Payments USD':
+            if self.local_payments_usd_bulk_upload_items:
+                for item in self.local_payments_usd_bulk_upload_items:
+                    p_entry = frappe.get_doc("Payment Entry", item.reference)
+                    if p_entry.docstatus==0:
+                        p_entry.custom_cash_flow_period = self.cash_flow_period
+
+                        p_entry.save()
+                        p_entry.submit()
                         
         elif self.type == 'International Payments USD':
             if self.international_payments_usd_bulk_upload_items:
@@ -133,6 +142,7 @@ class BulkUpload(Document):
         self.international_payments_eur_bulk_upload_items = []
         self.international_payments_gbp_bulk_upload_items = []
         self.international_payments_rwf_bulk_upload_items = []
+        self.local_payments_usd_bulk_upload_items = []
         # self.international_payments_bulk_upload_items = []
 
         draft_payments = frappe.db.get_all('Payment Entry', filters={
@@ -146,7 +156,7 @@ class BulkUpload(Document):
         if draft_payments:
             for pymnt in draft_payments:
                 # if pymnt.get("custom_upload_type") in ["EFT", "RTGS", "International Payments"]:
-                if pymnt.get("custom_upload_type") in ["EFT NCBA","EFT STANBIC BANK","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
+                if pymnt.get("custom_upload_type") in ["EFT NCBA","EFT STANBIC BANK","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "Local Payments USD", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
                     if pymnt.get("party_bank_account"):
                         
                         bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')
