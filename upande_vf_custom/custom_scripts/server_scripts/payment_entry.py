@@ -38,6 +38,28 @@ def before_save(doc,method):
             if outstanding_amount > 0:
                 outstanding_bal = outstanding_bal+outstanding_amount
             
+            # Populate custom_invoice_total_amount conditionally per reference row
+            try:
+                ref_dt = item.get("reference_doctype")
+                ref_dn = item.get("reference_name")
+                custom_total = None
+                if ref_dt and ref_dn:
+                    if ref_dt in ("Sales Invoice", "Purchase Invoice"):
+                        custom_total = frappe.db.get_value(ref_dt, ref_dn, "grand_total")
+                    elif ref_dt == "Journal Entry":
+                        totals = frappe.db.get_value(ref_dt, ref_dn, ["total_debit", "total_credit"], as_dict=True)
+                        if totals:
+                            td = float(totals.get("total_debit") or 0)
+                            tc = float(totals.get("total_credit") or 0)
+                            custom_total = td if td else tc if tc else max(td, tc)
+                    else:
+                        custom_total = item.get("total_amount")
+
+                if custom_total is not None:
+                    item.custom_invoice_total_amount = custom_total
+            except Exception:
+                pass
+            
         doc.custom_total_outstanding_amount = outstanding_bal   
         doc.custom_withholding_taxes = withh_tax     
     
