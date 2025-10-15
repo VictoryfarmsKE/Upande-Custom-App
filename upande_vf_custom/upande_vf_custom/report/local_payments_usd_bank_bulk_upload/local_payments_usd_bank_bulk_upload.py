@@ -1,7 +1,5 @@
 # Copyright (c) 2025, Upande Ltd and contributors
 # For license information, please see license.txt
-
-
 import frappe
 
 def execute(filters=None):
@@ -31,10 +29,10 @@ def get_data(filters):
                 `credit_narrative`,
                 `deal_reference_number`,
                 `name`
-            FROM
-                `Local USD Bulk Upload Item`
+            FROM 
+                `tabLocal USD Bulk Upload Item`
             WHERE
-                `Local USD Bulk Upload Item`.parent = %(parent)s
+                `tabLocal USD Bulk Upload Item`.parent = %(parent)s
             """
             
     # Use the frappe.db.sql method to execute the query safely
