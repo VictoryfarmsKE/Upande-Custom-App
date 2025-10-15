@@ -385,8 +385,6 @@ function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
     frm.save()
 }
 
-
-
 function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
     const childTableField = 'mpesa_bulk_upload_items'; // Update this with the actual field name of your child table
 
