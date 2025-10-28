@@ -650,6 +650,7 @@ def make_stock_entry(source_name, target_doc=None):
 					"name": "requisition_form_item",
 					"parent": "requisition_form",
 					"uom": "stock_uom",
+					"cost_center":"cost_center",
 					"job_card_item": "job_card_item",
 				},
 				"postprocess": update_item,
