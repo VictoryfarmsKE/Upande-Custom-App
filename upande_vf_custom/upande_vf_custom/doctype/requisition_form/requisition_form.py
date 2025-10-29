@@ -591,6 +591,7 @@ def make_stock_entry(source_name, target_doc=None):
 		target.qty = qty
 		target.transfer_qty = qty * obj.conversion_factor
 		target.conversion_factor = obj.conversion_factor
+		target.cost_center = obj.cost_center
 
 		if (
 			source_parent.material_request_type == "Material Transfer"
