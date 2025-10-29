@@ -52,3 +52,28 @@ def convert_time(date_time):
     r_date = datetime.strptime(date_str, "%Y-%m-%d")
     
     return r_date
+
+
+def ensure_cost_center_on_material_issue(doc, method):
+    try:
+        purpose = (getattr(doc, "purpose", None) or getattr(doc, "stock_entry_type", None) or "").strip()
+        if frappe.safe_decode(purpose) != "Material Issue":
+            return
+
+        parent_cc = getattr(doc, "custom_cost_center", None)
+
+        if not getattr(doc, "items", None):
+            return
+
+        for row in doc.items:
+            rf_item_name = getattr(row, "requisition_form_item", None)
+            rf_cc = None
+            if rf_item_name:
+                rf_cc = frappe.db.get_value("Requisition Form Item", rf_item_name, "cost_center")
+
+            if rf_cc:
+                row.cost_center = rf_cc
+            elif parent_cc and not getattr(row, "cost_center", None):
+                row.cost_center = parent_cc
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "ensure_cost_center_on_material_issue failed")
