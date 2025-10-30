@@ -57,27 +57,20 @@ def convert_time(date_time):
 def ensure_cost_center_matches_parent(doc, method):
     """For Stock Entries of type 'Material Issue', enforce that each Stock Entry Detail
     has the same cost_center as the parent Stock Entry.
-
-    Runs on before_save so client-side defaults (which may set a company default) are
-    overwritten before the document is persisted.
     """
     try:
-        # Determine stock entry type/purpose (handle both fields used across versions)
         purpose = (getattr(doc, "purpose", None) or getattr(doc, "stock_entry_type", None) or "").strip()
         if frappe.safe_encode(purpose).decode() != "Material Issue":
-            # Not a Material Issue; do nothing
             return
 
         parent_cc = getattr(doc, "custom_cost_center", None)
         if not parent_cc:
-            # Parent cost center not set; nothing to enforce
             return
 
         if not getattr(doc, "items", None):
             return
 
         for row in doc.items:
-            # Always set detail cost_center to parent's cost_center for Material Issue
             row.cost_center = parent_cc
     except Exception:
         frappe.log_error(frappe.get_traceback(), "ensure_cost_center_matches_parent failed")
