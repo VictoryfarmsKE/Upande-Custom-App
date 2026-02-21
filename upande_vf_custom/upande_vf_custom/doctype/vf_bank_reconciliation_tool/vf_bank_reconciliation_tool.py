@@ -9,7 +9,6 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.query_builder.custom import ConstantColumn
 from frappe.utils import cint, flt
-from pypika.terms import Parameter
 
 from erpnext import get_default_cost_center
 from erpnext.accounts.doctype.bank_transaction.bank_transaction import get_total_allocated_amount
@@ -804,7 +803,7 @@ def get_je_matching_query(
 		.where(je.docstatus == 1)
 		.where(je.voucher_type != "Opening Entry")
 		.where(je.clearance_date.isnull())
-		.where(jea.account == Parameter("%(bank_account)s"))
+		.where(jea.account == common_filters.bank_account)
 		.where(amount_equality if exact_match else getattr(jea, amount_field) > 0.0)
 		.where(je.docstatus == 1)
 		.where(filter_by_date)
@@ -814,19 +813,19 @@ def get_je_matching_query(
 	if frappe.flags.auto_reconcile_vouchers == True:
 		query = query.where(ref_condition)
 
-	return str(query)
+	return query
 
 
-def get_si_matching_query(exact_match, currency):
+def get_si_matching_query(exact_match, currency, common_filters=None):
 	# get matching sales invoice query
 	si = frappe.qb.DocType("Sales Invoice")
 	sip = frappe.qb.DocType("Sales Invoice Payment")
 
-	amount_equality = sip.amount == Parameter("%(amount)s")
+	amount_equality = sip.amount == common_filters.amount
 	amount_rank = frappe.qb.terms.Case().when(amount_equality, 1).else_(0)
 	amount_condition = amount_equality if exact_match else sip.amount > 0.0
 
-	party_condition = si.customer == Parameter("%(party)s")
+	party_condition = si.customer == common_filters.party
 	party_rank = frappe.qb.terms.Case().when(party_condition, 1).else_(0)
 
 	query = (
@@ -847,23 +846,23 @@ def get_si_matching_query(exact_match, currency):
 		)
 		.where(si.docstatus == 1)
 		.where(sip.clearance_date.isnull())
-		.where(sip.account == Parameter("%(bank_account)s"))
+		.where(sip.account == common_filters.bank_account)
 		.where(amount_condition)
 		.where(si.currency == currency)
 	)
 
-	return str(query)
+	return query
 
 
-def get_pi_matching_query(exact_match, currency):
+def get_pi_matching_query(exact_match, currency, common_filters=None):
 	# get matching purchase invoice query when they are also used as payment entries (is_paid)
 	purchase_invoice = frappe.qb.DocType("Purchase Invoice")
 
-	amount_equality = purchase_invoice.paid_amount == Parameter("%(amount)s")
+	amount_equality = purchase_invoice.paid_amount == common_filters.amount
 	amount_rank = frappe.qb.terms.Case().when(amount_equality, 1).else_(0)
 	amount_condition = amount_equality if exact_match else purchase_invoice.paid_amount > 0.0
 
-	party_condition = purchase_invoice.supplier == Parameter("%(party)s")
+	party_condition = purchase_invoice.supplier == common_filters.party
 	party_rank = frappe.qb.terms.Case().when(party_condition, 1).else_(0)
 
 	query = (
@@ -883,9 +882,9 @@ def get_pi_matching_query(exact_match, currency):
 		.where(purchase_invoice.docstatus == 1)
 		.where(purchase_invoice.is_paid == 1)
 		.where(purchase_invoice.clearance_date.isnull())
-		.where(purchase_invoice.cash_bank_account == Parameter("%(bank_account)s"))
+		.where(purchase_invoice.cash_bank_account == common_filters.bank_account)
 		.where(amount_condition)
 		.where(purchase_invoice.currency == currency)
 	)
 
-	return str(query)
+	return query
