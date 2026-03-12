@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class VFAssetMaintenanceScheduleTasks(Document):
+class PreventativeMaintenanceScheduleTasks(Document):
 	pass
