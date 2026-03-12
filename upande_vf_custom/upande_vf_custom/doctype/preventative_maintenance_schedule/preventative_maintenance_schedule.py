@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class VFAssetMaintenanceSchedule(Document):
+class PreventativeMaintenanceSchedule(Document):
     # def on_save(self):
     #     if self.docstatus == 0 and not self.prepared_by:  # Only set prepared_by if not already set
     #         user_name = frappe.db.get_value("User", {"email": frappe.session.user}, "full_name")
