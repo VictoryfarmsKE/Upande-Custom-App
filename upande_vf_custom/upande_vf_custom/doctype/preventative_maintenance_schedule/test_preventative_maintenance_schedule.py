@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestVFAssetMaintenanceScheduleTasks(FrappeTestCase):
+class TestPreventativeMaintenanceSchedule(FrappeTestCase):
 	pass

@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Upande Ltd and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('VF Asset Maintenance Schedule', {
+frappe.ui.form.on('Preventative Maintenance Schedule', {
     refresh: function(frm) {
         // Add the button if not already present
         if (!frm.fields_dict['create_button']) {
