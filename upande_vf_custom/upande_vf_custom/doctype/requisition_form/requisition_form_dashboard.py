@@ -3,7 +3,7 @@ from frappe import _
 
 def get_data():
 	return {
-		"fieldname": "material_request",
+		"fieldname": "custom_requisition_form",
 		"internal_links": {
 			"Sales Order": ["items", "sales_order"],
 			"Project": ["items", "project"],
