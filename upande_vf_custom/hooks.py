@@ -275,4 +275,25 @@ get_matching_queries = (
 	"upande_vf_custom.upande_vf_custom.doctype.vf_bank_reconciliation_tool.vf_bank_reconciliation_tool.get_matching_queries"
 )
 get_amounts_not_reflected_in_system_for_vf_bank_reconciliation_statement = "upande_vf_custom.upande_vf_custom.report.vf_bank_reconciliation_statement.vf_bank_reconciliation_statement.get_amounts_not_reflected_in_system_for_vf_bank_reconciliation_statement"
+
+# REMOVED PROPERTY SETTERS (kept here for reference):
+# ---------------------------------------------------------------------------
+# Purchase Order Item - item_code depends_on setter removed from
+# upande_vf_custom/upande_vf_custom/custom/purchase_order_item.json
+#
+# Removed entry:
+#   name: "Purchase Order Item-item_code-depends_on"
+#   property: "depends_on"
+#   field_name: "item_code"
+#   value: "eval:doc.custom_item_group"
+#   created: 2024-08-07 by james@upande.com
+#
+# Reason: This setter was being synced to the site and kept appearing as
+# a manual override on the Purchase Order Item doctype, requiring manual
+# removal each time. It was removed from the property_setters array to
+# stop the unwanted sync.
+#
+# To re-add, restore the entry to the property_setters array in:
+#   upande_vf_custom/upande_vf_custom/custom/purchase_order_item.json
+# ---------------------------------------------------------------------------
 get_entries_for_vf_bank_reconciliation_statement = "upande_vf_custom.upande_vf_custom.report.vf_bank_reconciliation_statement.vf_bank_reconciliation_statement.get_entries_for_vf_bank_reconciliation_statement"
