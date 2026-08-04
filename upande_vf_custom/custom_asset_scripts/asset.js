@@ -7,7 +7,7 @@ frappe.ui.form.on('Asset', {
     custom_maintenance_schedule: function(frm) {
         // Check if custom_maintenance_schedule has a value
         if (frm.doc.custom_maintenance_schedule) {
-            frappe.db.get_doc("VF Asset Maintenance Schedule Tasks", frm.doc.custom_maintenance_schedule)
+            frappe.db.get_doc("Preventative Maintenance Schedule Tasks", frm.doc.custom_maintenance_schedule)
                 .then(am_doc => {
                     console.log(am_doc);
 
@@ -23,10 +23,25 @@ frappe.ui.form.on('Asset', {
                             console.log(response.message);
                             var name = response.message;
                             // Route to the saved document form in draft mode
-                            frappe.set_route('Form', 'VF Asset Maintenance Schedule', name);
+                            frappe.set_route('Form', 'Preventative Maintenance Schedule', name);
                         }
                     });
                 });
+        }
+    },
+
+    refresh: function(frm) {
+        if (frm.doc.docstatus == 1) {
+            frm.add_custom_button(
+                __('Fixed Asset Register'),
+                function() {
+                    frappe.set_route('query-report', 'Fixed Asset Register', {
+                        company: frm.doc.company,
+                        asset_category: frm.doc.asset_category,
+                    });
+                },
+                __('Manage')
+            );
         }
     }
 });

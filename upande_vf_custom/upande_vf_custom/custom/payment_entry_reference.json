@@ -17,7 +17,7 @@
    "description": null,
    "docstatus": 0,
    "dt": "Payment Entry Reference",
-   "fetch_from": "reference_name.total",
+            "fetch_from": "",
    "fetch_if_empty": 0,
    "fieldname": "custom_invoice_total_amount",
    "fieldtype": "Data",

@@ -52,3 +52,25 @@ def convert_time(date_time):
     r_date = datetime.strptime(date_str, "%Y-%m-%d")
     
     return r_date
+
+
+def ensure_cost_center_matches_parent(doc, method):
+    """For Stock Entries of type 'Material Issue', enforce that each Stock Entry Detail
+    has the same cost_center as the parent Stock Entry.
+    """
+    try:
+        purpose = (getattr(doc, "purpose", None) or getattr(doc, "stock_entry_type", None) or "").strip()
+        if frappe.safe_encode(purpose).decode() != "Material Issue":
+            return
+
+        parent_cc = getattr(doc, "custom_cost_center", None)
+        if not parent_cc:
+            return
+
+        if not getattr(doc, "items", None):
+            return
+
+        for row in doc.items:
+            row.cost_center = parent_cc
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "ensure_cost_center_matches_parent failed")
