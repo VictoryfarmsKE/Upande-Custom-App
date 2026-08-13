@@ -67,6 +67,25 @@ class BulkUpload(Document):
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)
                 else:
+                    beneficiaries = frappe.get_all(
+                    "Payment Entry Beneficiary",
+                        filters={
+                            "parent": pymnt["name"],
+                            "parenttype": "Payment Entry",
+                        },
+                        fields=[
+                            "mobile_number",
+                            "document_type",
+                            "document_number",
+                            "purpose_of_payment",
+                        ],
+                    )
+                    if beneficiaries:
+                        first = beneficiaries[0]
+                        pymnt["mobilenumber"] = first.get("mobile_number") or ""
+                        pymnt["documenttype"] = first.get("document_type") or ""
+                        pymnt["supplier_invoice"] = first.get("document_number") or ""
+                        pymnt["purposeofpayment"] = first.get("purpose_of_payment") or ""
                    if not pymnt in pymnts_list:
                         pymnts_list.append(pymnt) 
                         
