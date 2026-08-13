@@ -62,6 +62,11 @@ function processEFTDraftPayments(frm, draftPymnts) {
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
             newRow.amount = dp.paid_amount;
+			newRow.mobilenumber = dp.mobilenumber || '';
+            newRow.documenttype = dp.documenttype || '';
+            newRow.supplier_invoice = dp.supplier_invoice || '';
+            newRow.purposeofpayment = dp.purposeofpayment || '';
+
             existingPymnts.add(dp.name);
         }
     });
