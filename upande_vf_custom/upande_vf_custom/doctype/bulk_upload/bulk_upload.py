@@ -46,10 +46,20 @@ class BulkUpload(Document):
         self.rtgs_bulk_upload_items = []
         self.international_payments_bulk_upload_items = []
 
+        # --- NEW: Get Payment Entry names already used in submitted Bulk Uploads ---
+        already_used = frappe.get_all(
+            "Mpesa Bulk Upload Item",
+            filters={"parenttype": "Bulk Upload"},
+            fields=["payment_reference"],
+        )
+        used_names = [item.payment_reference for item in already_used if item.payment_reference]
+        # --- END NEW ---
+
         draft_payments = frappe.db.get_all('Payment Entry', filters={
             'status': ['in', ['Draft']],
             'payment_type': 'Pay',
-            "custom_upload_type": self.type
+            "custom_upload_type": self.type,
+            "name": ["not in", used_names] if used_names else ["like", "%%"]
         }, fields=['name', 'party', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
         
         if draft_payments:
@@ -82,11 +92,3 @@ class BulkUpload(Document):
         report_url = f"{site_url}/app/query-report/{self.get('type')} Bank Bulk Upload?parent={self.get('name')}"
         
         frappe.response['message'] = report_url
-
-
-
-
-
-
-
-                        
