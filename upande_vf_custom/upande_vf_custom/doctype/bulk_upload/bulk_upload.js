@@ -62,6 +62,11 @@ function processEFTDraftPayments(frm, draftPymnts) {
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
             newRow.amount = dp.paid_amount;
+			newRow.mobilenumber = dp.mobilenumber || '';
+            newRow.documenttype = dp.documenttype || '';
+            newRow.supplier_invoice = dp.supplier_invoice || '';
+            newRow.purposeofpayment = dp.purposeofpayment || '';
+
             existingPymnts.add(dp.name);
         }
     });
@@ -93,10 +98,9 @@ function processRTGSDraftPayments(frm, draftPymnts) {
 }
 
 function processIPDraftPayments(frm, draftPymnts, grand_totals) {
-    const childTableField = 'international_payments_bulk_upload_items'; // Update this with the actual field name of your child table
+    const childTableField = 'international_payments_bulk_upload_items';
 
-    // Create a set of existing entries to check for duplicates
-    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); // Assuming 'payment_reference' is a field in the child table
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference));
     draftPymnts.forEach(dp => {
          if (!existingPymnts.has(dp.name)) {
             let newRow = frm.add_child(childTableField);
@@ -108,36 +112,39 @@ function processIPDraftPayments(frm, draftPymnts, grand_totals) {
             newRow.debit_amount = dp.paid_amount;
             newRow.swift_code = dp.swift_code;
             newRow.payment_type = dp.custom_upload_type;
-            existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
+            existingPymnts.add(dp.name);
         }
     });
     
     frm.doc.total_amount = grand_totals
     
-    frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
+    frm.refresh_field(childTableField);
     frm.refresh_field('total_amount')
     frm.save()
 }
-function processMpesaDraftPayments(frm, draftPymnts, grand_totals) {
-    const childTableField = 'mpesa_bulk_upload_items'; // Update this with the actual field name of your child table
 
-    // Create a set of existing entries to check for duplicates
-    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); // Assuming 'payment_reference' is a field in the child table
+function processMpesaDraftPayments(frm, draftPymnts, grand_totals) {
+    const childTableField = 'mpesa_bulk_upload_items';
+
+    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference + '_' + (row.mobilenumber || '')));
     draftPymnts.forEach(dp => {
-         if (!existingPymnts.has(dp.name)) {
+        const key = dp.name + '_' + (dp.mobilenumber || '');
+        if (!existingPymnts.has(key)) {
             let newRow = frm.add_child(childTableField);
-            newRow.payment_reference = dp.name; // Assuming 'payment_reference' is a field in the child table
-            newRow.beneficiary_name = dp.party; // Assuming 'beneficiary_name' is a field in the child table
-            newRow.bank_account = dp.bank_name;
-            newRow.reference = dp.reference_no
-            newRow.amount = dp.paid_amount; // Assuming 'amount' is a field in the child table
-            existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
+            newRow.payment_reference = dp.name;
+            newRow.beneficiary_name = dp.party;
+            newRow.mobilenumber = dp.mobilenumber || '';
+            newRow.documenttype = dp.documenttype || '';
+            newRow.supplier_invoice = dp.supplier_invoice || '';
+            newRow.amount = dp.paid_amount;
+            newRow.purposeofpayment = dp.purposeofpayment || '';
+            existingPymnts.add(key);
         }
     });
     
     frm.doc.total_amount = grand_totals
     
-    frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
+    frm.refresh_field(childTableField);
     frm.refresh_field('total_amount')
     frm.save()
 }

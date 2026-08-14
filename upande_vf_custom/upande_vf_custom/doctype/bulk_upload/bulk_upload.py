@@ -67,8 +67,33 @@ class BulkUpload(Document):
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)
                 else:
-                   if not pymnt in pymnts_list:
-                        pymnts_list.append(pymnt) 
+                    # For Mpesa payments, create one row per beneficiary
+                    beneficiaries = frappe.db.get_all(
+                        "Payment Entry Beneficiary",
+                        filters={
+                            "parent": pymnt["name"],
+                            "parenttype": "Payment Entry",
+                        },
+                        fields=[
+                            "mobile_number",
+                            "document_type",
+                            "document_number",
+                            "purpose_of_payment",
+                            "amount",
+                        ],
+                    )
+                    if beneficiaries:
+                        for ben in beneficiaries:
+                            entry = dict(pymnt)
+                            entry["mobilenumber"] = ben.get("mobile_number") or ""
+                            entry["documenttype"] = ben.get("document_type") or ""
+                            entry["supplier_invoice"] = ben.get("document_number") or ""
+                            entry["purposeofpayment"] = ben.get("purpose_of_payment") or ""
+                            entry["paid_amount"] = ben.get("amount") or pymnt.get("paid_amount")
+                            pymnts_list.append(entry)
+                    else:
+                        if not pymnt in pymnts_list:
+                            pymnts_list.append(pymnt)
                         
         response_data = {
             'draft_payments': pymnts_list
@@ -82,11 +107,3 @@ class BulkUpload(Document):
         report_url = f"{site_url}/app/query-report/{self.get('type')} Bank Bulk Upload?parent={self.get('name')}"
         
         frappe.response['message'] = report_url
-
-
-
-
-
-
-
-                        

@@ -14,13 +14,13 @@ def get_data(filters):
     parent = filters.get("parent")
     query = """
             SELECT
-                "payment_reference",
-                "mobilenumber",
-				"documenttype",
-				"supplier_invoice",
-				"amount",
-				"purposeofpayment",
-				"beneficiary_name"
+                payment_reference,
+                mobilenumber,
+				documenttype,
+				supplier_invoice,
+				amount,
+				purposeofpayment,
+				beneficiary_name
             FROM
                 `tabMpesa Bulk Upload Item`
             WHERE
