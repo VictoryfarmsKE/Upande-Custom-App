@@ -46,10 +46,20 @@ class BulkUpload(Document):
         self.rtgs_bulk_upload_items = []
         self.international_payments_bulk_upload_items = []
 
+        # --- NEW: Get Payment Entry names already used in submitted Bulk Uploads ---
+        already_used = frappe.get_all(
+            "Mpesa Bulk Upload Item",
+            filters={"parenttype": "Bulk Upload"},
+            fields=["payment_reference"],
+        )
+        used_names = [item.payment_reference for item in already_used if item.payment_reference]
+        # --- END NEW ---
+
         draft_payments = frappe.db.get_all('Payment Entry', filters={
             'status': ['in', ['Draft']],
             'payment_type': 'Pay',
-            "custom_upload_type": self.type
+            "custom_upload_type": self.type,
+            "name": ["not in", used_names] if used_names else ["like", "%%"]
         }, fields=['name', 'party', 'paid_amount', 'party_bank_account', 'custom_upload_type', 'reference_no'])
         
         if draft_payments:
@@ -67,33 +77,8 @@ class BulkUpload(Document):
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)
                 else:
-                    # For Mpesa payments, create one row per beneficiary
-                    beneficiaries = frappe.db.get_all(
-                        "Payment Entry Beneficiary",
-                        filters={
-                            "parent": pymnt["name"],
-                            "parenttype": "Payment Entry",
-                        },
-                        fields=[
-                            "mobile_number",
-                            "document_type",
-                            "document_number",
-                            "purpose_of_payment",
-                            "amount",
-                        ],
-                    )
-                    if beneficiaries:
-                        for ben in beneficiaries:
-                            entry = dict(pymnt)
-                            entry["mobilenumber"] = ben.get("mobile_number") or ""
-                            entry["documenttype"] = ben.get("document_type") or ""
-                            entry["supplier_invoice"] = ben.get("document_number") or ""
-                            entry["purposeofpayment"] = ben.get("purpose_of_payment") or ""
-                            entry["paid_amount"] = ben.get("amount") or pymnt.get("paid_amount")
-                            pymnts_list.append(entry)
-                    else:
-                        if not pymnt in pymnts_list:
-                            pymnts_list.append(pymnt)
+                   if not pymnt in pymnts_list:
+                        pymnts_list.append(pymnt) 
                         
         response_data = {
             'draft_payments': pymnts_list
