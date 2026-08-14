@@ -86,7 +86,7 @@ class BulkUpload(Document):
                         pymnt["documenttype"] = first.get("document_type") or ""
                         pymnt["supplier_invoice"] = first.get("document_number") or ""
                         pymnt["purposeofpayment"] = first.get("purpose_of_payment") or ""
-                   if not pymnt in pymnts_list:
+                    if not pymnt in pymnts_list:
                         pymnts_list.append(pymnt) 
                         
         response_data = {
