@@ -67,6 +67,7 @@ class BulkUpload(Document):
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)
                 else:
+                    # For Mpesa payments, create one row per beneficiary
                     beneficiaries = frappe.db.get_all(
                         "Payment Entry Beneficiary",
                         filters={
@@ -78,16 +79,21 @@ class BulkUpload(Document):
                             "document_type",
                             "document_number",
                             "purpose_of_payment",
+                            "amount",
                         ],
                     )
                     if beneficiaries:
-                        first = beneficiaries[0]
-                        pymnt["mobilenumber"] = first.get("mobile_number") or ""
-                        pymnt["documenttype"] = first.get("document_type") or ""
-                        pymnt["supplier_invoice"] = first.get("document_number") or ""
-                        pymnt["purposeofpayment"] = first.get("purpose_of_payment") or ""
-                    if not pymnt in pymnts_list:
-                        pymnts_list.append(pymnt) 
+                        for ben in beneficiaries:
+                            entry = dict(pymnt)
+                            entry["mobilenumber"] = ben.get("mobile_number") or ""
+                            entry["documenttype"] = ben.get("document_type") or ""
+                            entry["supplier_invoice"] = ben.get("document_number") or ""
+                            entry["purposeofpayment"] = ben.get("purpose_of_payment") or ""
+                            entry["paid_amount"] = ben.get("amount") or pymnt.get("paid_amount")
+                            pymnts_list.append(entry)
+                    else:
+                        if not pymnt in pymnts_list:
+                            pymnts_list.append(pymnt)
                         
         response_data = {
             'draft_payments': pymnts_list
@@ -101,11 +107,3 @@ class BulkUpload(Document):
         report_url = f"{site_url}/app/query-report/{self.get('type')} Bank Bulk Upload?parent={self.get('name')}"
         
         frappe.response['message'] = report_url
-
-
-
-
-
-
-
-                        
