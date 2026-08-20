@@ -6,35 +6,54 @@ import frappe
 from frappe.model.document import Document
 
 
+# Payment types that use the EFT child table
+EFT_TYPES = ["EFT", "EFT STANBIC", "EFT NCBA"]
+# Payment types that use the RTGS child table
+RTGS_TYPES = ["RTGS", "RTGS NCBA", "RTGS STANBIC"]
+# Payment types that use the International Payments child table
+INTERNATIONAL_TYPES = [
+    "International Payments",
+    "International Payments USD NCBA",
+    "International Payments USD STANBIC",
+    "International Payments EUR",
+    "International Payments RWF",
+    "International Payments GBP",
+    "International Payments ZAR",
+    "International Payments TZS",
+]
+# Payment types that need bank details (EFT, RTGS, International, Local USD)
+BANK_DETAIL_TYPES = EFT_TYPES + RTGS_TYPES + INTERNATIONAL_TYPES + [
+    "LOCAL USD NCBA",
+    "LOCAL USD STANBIC",
+]
+
+
 class BulkUpload(Document):
     def before_submit(self):
-        if self.type == "EFT":
+        if self.type in EFT_TYPES:
             if self.eft_bulk_upload_items:
                 for item in self.eft_bulk_upload_items:
                     p_entry = frappe.get_doc("Payment Entry", item.payment_reference)
-                    if p_entry.docstatus==0:
+                    if p_entry.docstatus == 0:
                         p_entry.custom_cash_flow_period = self.cash_flow_period
-
                         p_entry.save()
                         p_entry.submit()
-                        
-        elif self.type == "RTGS":
+
+        elif self.type in RTGS_TYPES:
             if self.rtgs_bulk_upload_items:
                 for item in self.rtgs_bulk_upload_items:
                     p_entry = frappe.get_doc("Payment Entry", item.payment_reference)
-                    if p_entry.docstatus==0:
+                    if p_entry.docstatus == 0:
                         p_entry.custom_cash_flow_period = self.cash_flow_period
-
                         p_entry.save()
                         p_entry.submit()
-                        
-        elif self.type == 'International Payments':
+
+        elif self.type in INTERNATIONAL_TYPES:
             if self.international_payments_bulk_upload_items:
                 for item in self.international_payments_bulk_upload_items:
                     p_entry = frappe.get_doc("Payment Entry", item.reference)
-                    if p_entry.docstatus==0:
+                    if p_entry.docstatus == 0:
                         p_entry.custom_cash_flow_period = self.cash_flow_period
-
                         p_entry.save()
                         p_entry.submit()
     
@@ -63,7 +82,7 @@ class BulkUpload(Document):
         
         if draft_payments:
             for pymnt in draft_payments:
-                if pymnt.get("custom_upload_type") in ["EFT", "RTGS", "International Payments"]:
+                if pymnt.get("custom_upload_type") in BANK_DETAIL_TYPES:
                     if pymnt.get("party_bank_account"):
                         
                         bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')
