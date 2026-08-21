@@ -85,7 +85,7 @@
    "options": "EFT Bulk Upload Item"
   },
   {
-   "depends_on": "eval:doc.type==\"International Payments\"",
+   "depends_on": "eval:doc.type==\"International Payments\"|| doc.type==\"International Payments USD NCBA\" || doc.type==\"International Payments USD STANBIC\" || doc.type==\"International Payments EUR\" || doc.type==\"International Payments RWF\" || doc.type==\"International Payments GBP\" || doc.type==\"International Payments ZAR\" || doc.type==\"International Payments TZS\"",
    "fieldname": "international_payments_bulk_upload_items",
    "fieldtype": "Table",
    "label": "International Payments Bulk Upload Items",
