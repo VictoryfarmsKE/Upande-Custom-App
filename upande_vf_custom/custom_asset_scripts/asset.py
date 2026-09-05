@@ -10,7 +10,7 @@ def asset_maintenance_tasks2(message):
         record = data.get("record")
 
         if record:
-            new_ms = frappe.new_doc("VF Asset Maintenance Schedule")
+            new_ms = frappe.new_doc("Preventative Maintenance Schedule")
             new_ms.asset_name = asset_name
             new_ms.asset = asset_name
             new_ms.maintenance_team = record.get("maintenance_team")
