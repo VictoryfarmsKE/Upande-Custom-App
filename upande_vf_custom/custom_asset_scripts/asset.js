@@ -28,5 +28,20 @@ frappe.ui.form.on('Asset', {
                     });
                 });
         }
+    },
+
+    refresh: function(frm) {
+        if (frm.doc.docstatus == 1) {
+            frm.add_custom_button(
+                __('Fixed Asset Register'),
+                function() {
+                    frappe.set_route('query-report', 'Fixed Asset Register', {
+                        company: frm.doc.company,
+                        asset_category: frm.doc.asset_category,
+                    });
+                },
+                __('Manage')
+            );
+        }
     }
 });

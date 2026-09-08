@@ -591,6 +591,7 @@ def make_stock_entry(source_name, target_doc=None):
 		target.qty = qty
 		target.transfer_qty = qty * obj.conversion_factor
 		target.conversion_factor = obj.conversion_factor
+		target.cost_center = obj.cost_center
 
 		if (
 			source_parent.material_request_type == "Material Transfer"
@@ -650,6 +651,7 @@ def make_stock_entry(source_name, target_doc=None):
 					"name": "requisition_form_item",
 					"parent": "requisition_form",
 					"uom": "stock_uom",
+					"cost_center":"cost_center",
 					"job_card_item": "job_card_item",
 				},
 				"postprocess": update_item,
@@ -766,3 +768,56 @@ def make_in_transit_stock_entry(source_name, in_transit_warehouse):
 		row.t_warehouse = in_transit_warehouse
 
 	return ste_doc
+
+@frappe.whitelist()
+def make_purchase_request_from_material_issue(source_name, target_doc=None):
+    """Create a new Purchase Requisition Form from a Material Issue, for items where actual_qty < qty."""
+    source_doc = frappe.get_doc("Requisition Form", source_name)
+    filtered_items = [item for item in source_doc.items if flt(item.actual_qty) < flt(item.qty)]
+    if not filtered_items:
+        frappe.throw(_("Items actual quantity is more than than quantity set for issue."))
+
+    def postprocess(source, target_doc):
+        target_doc.material_request_type = "Purchase"
+        target_doc.company = source.company
+        target_doc.custom_department = getattr(source, "custom_department", None)
+        target_doc.custom_type = getattr(source, "custom_type", None)
+        target_doc.custom_cost_center = getattr(source, "custom_cost_center", None)
+        target_doc.schedule_date = source.schedule_date
+        target_doc.set_warehouse = source.set_warehouse
+        target_doc.custom_destination_warehouse = getattr(source, "custom_destination_warehouse", None)
+        target_doc.custom_project = getattr(source, "custom_project", None)
+        target_doc.custom_spending_code = getattr(source, "custom_spending_code", None)
+
+    def item_condition(item):
+        return flt(item.actual_qty) < flt(item.qty)
+
+    doclist = get_mapped_doc(
+        "Requisition Form",
+        source_name,
+        {
+            "Requisition Form": {
+                "doctype": "Requisition Form",
+                "field_map": {},
+                "validation": {"docstatus": ["=", 1], "material_request_type": ["=", "Material Issue"]},
+            },
+            "Requisition Form Item": {
+                "doctype": "Requisition Form Item",
+                "field_map": {
+                    "item_code": "item_code",
+                    "uom": "uom",
+                    "conversion_factor": "conversion_factor",
+                    "schedule_date": "schedule_date",
+                    "custom_item_description": "custom_item_description",
+                    "warehouse": "warehouse",
+                    "project": "project",
+                },
+                "postprocess": lambda src, tgt, src_parent: setattr(tgt, "qty", flt(src.qty) - flt(src.actual_qty)),
+                "condition": item_condition,
+            },
+        },
+        target_doc,
+        postprocess,
+    )
+
+    return doclist
