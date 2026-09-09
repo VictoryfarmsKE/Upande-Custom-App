@@ -86,7 +86,7 @@ function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
             newRow.beneficiary_name = dp.custom_account_name;
-            newRow.bank_account = dp.party_bank_account;
+            frappe.model.set_value(newRow.doctype, newRow.name, "bank_account", dp.party_bank_account);
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
             newRow.amount = dp.paid_amount;
@@ -110,7 +110,7 @@ function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
             newRow.beneficiary_name = dp.custom_account_name;
-            newRow.bank_account = dp.party_bank_account;
+            frappe.model.set_value(newRow.doctype, newRow.name, "bank_account", dp.party_bank_account);
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
             newRow.amount = dp.paid_amount;
@@ -156,7 +156,7 @@ function processRTGSNCBADraftPayments(frm, draftPymnts, total_grand_total) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
             newRow.beneficiary_name = dp.custom_account_name;
-            newRow.bank_account = dp.party_bank_account;
+            frappe.model.set_value(newRow.doctype, newRow.name, "bank_account", dp.party_bank_account);
             newRow.reference = dp.reference_no
             newRow.bank = dp.bank_name
             newRow.swift_code = dp.swift_code;
@@ -181,7 +181,7 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
             let newRow = frm.add_child(childTableField);
             newRow.payment_reference = dp.name; 
             newRow.beneficiary_name = dp.custom_account_name;
-            newRow.bank_account = dp.party_bank_account;
+            frappe.model.set_value(newRow.doctype, newRow.name, "bank_account", dp.party_bank_account);
             newRow.reference = dp.reference_no
             newRow.swift_code = dp.swift_code;
             newRow.bank = dp.bank_name
