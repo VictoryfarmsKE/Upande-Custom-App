@@ -5,3 +5,4 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 upande_vf_custom.patches.remove_orphan_posa_table_fields
+upande_vf_custom.patches.repoint_maintenance_schedule_links
