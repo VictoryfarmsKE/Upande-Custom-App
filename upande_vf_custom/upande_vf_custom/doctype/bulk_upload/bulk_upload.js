@@ -3,7 +3,7 @@
 
 frappe.ui.form.on('Bulk Upload', {
     refresh(frm) {
-        calculate_total_amount(frm);
+        setTimeout(() => calculate_total_amount(frm), 300);
     },
     
 	get_draft_payments(frm) {
@@ -175,7 +175,8 @@ function calculate_total_amount(frm) {
         total += flt(row[amount_field]);
     });
     
-    frm.set_value('custom_total_amount', total);
+    frm.doc.custom_total_amount = total;
+    frm.refresh_field('custom_total_amount');
 }
 
 
