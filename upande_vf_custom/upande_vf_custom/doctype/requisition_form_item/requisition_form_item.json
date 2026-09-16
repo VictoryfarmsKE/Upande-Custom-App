@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
+  "asset",
   "item_name",
   "item_description",
   "column_break_xsgr",
@@ -78,6 +79,15 @@
    "width": "100px"
   },
   {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "mandatory_depends_on": "eval:(window.upande_fuel_item_groups||[\"Fuel\"]).includes(doc.item_group) && parent.material_request_type==\"Material Issue\" && doc.__islocal",
+   "options": "Asset",
+   "description": "Which asset this is for. Required on fuel lines of a Material Issue."
+  },
+  {
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_global_search": 1,
@@ -117,7 +127,9 @@
    "options": "Item Group",
    "print_hide": 1,
    "read_only": 1,
-   "search_index": 1
+   "search_index": 1,
+   "fetch_from": "item_code.item_group",
+   "fetch_if_empty": 1
   },
   {
    "fieldname": "brand",
@@ -459,7 +471,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-30 12:13:24.912119",
+ "modified": "2026-09-16 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "Requisition Form Item",
