@@ -2,6 +2,10 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Bulk Upload', {
+    refresh(frm) {
+        calculate_total_amount(frm);
+    },
+    
 	get_draft_payments(frm) {
         frappe.call({
             method: 'get_pending_payments',
@@ -73,8 +77,106 @@ frappe.ui.form.on('Bulk Upload', {
             }
         });
         
-    }
+    },
+    
+    mpesa_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    mpesa_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_ncba_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_ncba_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_stanbic_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    eft_stanbic_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_ncba_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_ncba_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_stanbic_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    rtgs_stanbic_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    local_payments_usd_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    local_payments_usd_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_usd_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_usd_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_zar_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_zar_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_eur_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_eur_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_gbp_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_gbp_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_rwf_bulk_upload_items_add: function(frm, cdt, cdn) { calculate_total_amount(frm); },
+    international_payments_rwf_bulk_upload_items_remove: function(frm, cdt, cdn) { calculate_total_amount(frm); }
 });
+
+function calculate_total_amount(frm) {
+    if (!frm.doc.type) return;
+    
+    let child_table_field = '';
+    let amount_field = 'amount';
+    
+    switch(frm.doc.type) {
+        case 'Mpesa':
+            child_table_field = 'mpesa_bulk_upload_items';
+            break;
+        case 'EFT':
+            child_table_field = 'eft_bulk_upload_items';
+            break;
+        case 'EFT NCBA':
+            child_table_field = 'eft_ncba_bulk_upload_items';
+            break;
+        case 'EFT STANBIC BANK':
+            child_table_field = 'eft_stanbic_bulk_upload_items';
+            break;
+        case 'RTGS':
+            child_table_field = 'rtgs_bulk_upload_items';
+            break;
+        case 'RTGS NCBA':
+            child_table_field = 'rtgs_ncba_bulk_upload_items';
+            break;
+        case 'RTGS STANBIC BANK':
+            child_table_field = 'rtgs_stanbic_bulk_upload_items';
+            break;
+        case 'International Payments':
+            child_table_field = 'international_payments_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'Local Payments USD':
+            child_table_field = 'local_payments_usd_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'International Payments USD':
+            child_table_field = 'international_payments_usd_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'International Payments ZAR':
+            child_table_field = 'international_payments_zar_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'International Payments EUR':
+            child_table_field = 'international_payments_eur_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'International Payments GBP':
+            child_table_field = 'international_payments_gbp_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+        case 'International Payments RWF':
+            child_table_field = 'international_payments_rwf_bulk_upload_items';
+            amount_field = 'debit_amount';
+            break;
+    }
+    
+    if (!child_table_field) return;
+    
+    let total = 0;
+    const rows = frm.doc[child_table_field] || [];
+    rows.forEach(row => {
+        total += flt(row[amount_field]);
+    });
+    
+    frm.set_value('custom_total_amount', total);
+}
 
 
 function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
@@ -94,10 +196,8 @@ function processEFTNCBADraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
  
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -118,10 +218,8 @@ function processEFTStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
  
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -166,10 +264,8 @@ function processRTGSNCBADraftPayments(frm, draftPymnts, total_grand_total) {
     });
     
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount') 
+    calculate_total_amount(frm);
     frm.save()
 }
 function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
@@ -191,10 +287,8 @@ function processRTGSStanbicDraftPayments(frm, draftPymnts, total_grand_total) {
     });
     
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount') 
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -245,10 +339,8 @@ function processLocalUSDDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -272,10 +364,8 @@ function processIPUSDDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -299,10 +389,8 @@ function processIPZARDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -326,10 +414,8 @@ function processIPEURDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -353,10 +439,8 @@ function processIPGBPDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -380,10 +464,8 @@ function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField);
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
 
@@ -404,9 +486,7 @@ function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
         }
     });
     
-    frm.doc.custom_total_amount = total_grand_total
-    
     frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
-    frm.refresh_field('custom_total_amount')
+    calculate_total_amount(frm);
     frm.save()
 }
