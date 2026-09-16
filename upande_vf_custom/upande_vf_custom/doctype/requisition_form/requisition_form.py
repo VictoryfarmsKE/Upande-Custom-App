@@ -15,6 +15,8 @@ from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
 
+from upande_vf_custom.custom_scripts.fuel_asset import is_fuel_row, validate_fuel_asset
+
 form_grid_templates = {"items": "templates/form_grid/material_request_grid.html"}
 
 
@@ -98,6 +100,26 @@ class RequisitionForm(BuyingController):
 
 		self.reset_default_field_value("set_warehouse", "items", "warehouse")
 		self.reset_default_field_value("set_from_warehouse", "items", "from_warehouse")
+		self.validate_fuel_line_assets()
+
+	def validate_fuel_line_assets(self):
+		"""Fuel lines on a Material Issue requisition must name an asset.
+
+		Only lines that are new, or whose item changed, since the last save are checked, so
+		requisitions already in approval when this shipped keep moving.
+		"""
+		if self.material_request_type != "Material Issue":
+			return
+
+		before = self.get_doc_before_save()
+		previous = {row.name: row.item_code for row in before.items} if before else {}
+
+		for row in self.items:
+			if not is_fuel_row(row):
+				continue
+			if previous.get(row.name) == row.item_code:
+				continue
+			validate_fuel_asset(row, _("Requisition Form"), self.company)
 
 	def before_update_after_submit(self):
 		self.validate_schedule_date()
