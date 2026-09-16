@@ -169,7 +169,8 @@ doc_events = {
 	# },
   	"Stock Entry": {
 			"after_insert": "upande_vf_custom.custom_scripts.server_scripts.stock_entry.after_insert",
-			"before_save": "upande_vf_custom.custom_scripts.server_scripts.stock_entry.ensure_cost_center_matches_parent"
+			"before_save": "upande_vf_custom.custom_scripts.server_scripts.stock_entry.ensure_cost_center_matches_parent",
+			"validate": "upande_vf_custom.custom_scripts.server_scripts.stock_entry.validate_fuel_issue_assets"
 	},
 	"Purchase Invoice": {
 		"on_submit": "upande_vf_custom.custom_scripts.server_scripts.purchase_invoice.on_submit",

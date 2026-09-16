@@ -1,5 +1,8 @@
 from datetime import datetime
 import frappe
+from frappe import _
+
+from upande_vf_custom.custom_scripts.fuel_asset import is_fuel_row, validate_fuel_asset
 
 @frappe.whitelist()
 def add_hcf(doc, method):
@@ -74,3 +77,14 @@ def ensure_cost_center_matches_parent(doc, method):
             row.cost_center = parent_cc
     except Exception:
         frappe.log_error(frappe.get_traceback(), "ensure_cost_center_matches_parent failed")
+
+
+def validate_fuel_issue_assets(doc, method):
+    """Every fuel line on a Material Issue must be charged to an eligible asset."""
+    purpose = (doc.get("purpose") or doc.get("stock_entry_type") or "").strip()
+    if purpose != "Material Issue":
+        return
+
+    for row in doc.get("items") or []:
+        if is_fuel_row(row):
+            validate_fuel_asset(row, _("Stock Entry"), doc.company)
