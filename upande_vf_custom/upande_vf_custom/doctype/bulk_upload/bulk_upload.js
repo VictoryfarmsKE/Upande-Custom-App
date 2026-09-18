@@ -471,23 +471,30 @@ function processIPRWFDraftPayments(frm, draftPymnts, total_grand_total) {
 }
 
 function processMpesaDraftPayments(frm, draftPymnts, total_grand_total) {
-    const childTableField = 'mpesa_bulk_upload_items'; // Update this with the actual field name of your child table
+    const childTableField = 'mpesa_bulk_upload_items';
 
-    // Create a set of existing entries to check for duplicates
-    const existingPymnts = new Set(frm.doc[childTableField].map(row => row.payment_reference)); // Assuming 'payment_reference' is a field in the child table
+    // Dedup using PE name + mobile number so each beneficiary gets its own row
+    const existingPymnts = new Set(
+        frm.doc[childTableField].map(row => (row.payment_reference || '') + '|' + (row.mobilenumber || ''))
+    );
     draftPymnts.forEach(dp => {
-         if (!existingPymnts.has(dp.name)) {
+        const dedupKey = (dp.pe_name || dp.name) + '|' + (dp.mobilenumber || '');
+        if (!existingPymnts.has(dedupKey)) {
             let newRow = frm.add_child(childTableField);
-            newRow.payment_reference = dp.name; // Assuming 'payment_reference' is a field in the child table
-            newRow.beneficiary_name = dp.custom_account_name; // Assuming 'beneficiary_name' is a field in the child table
-            newRow.bank_account = dp.bank_name;
-            newRow.reference = dp.reference_no
-            newRow.amount = dp.paid_amount; // Assuming 'amount' is a field in the child table
-            existingPymnts.add(dp.name); // Add the new purchase order to the set of existing orders
+            newRow.payment_reference = dp.pe_name || dp.name;   // actual PE name for submission
+            newRow.beneficiary_name = dp.party;
+            newRow.reference = dp.reference_no;
+            newRow.amount = dp.paid_amount;
+            // Populate beneficiary details from Payment Entry's child table
+            newRow.mobilenumber = dp.mobilenumber || '';
+            newRow.documenttype = dp.documenttype || '';
+            newRow.supplier_invoice = dp.supplier_invoice || '';
+            newRow.purposeofpayment = dp.purposeofpayment || '';
+            existingPymnts.add(dedupKey);
         }
     });
     
-    frm.refresh_field(childTableField); // Refresh the child table field to display the added rows
+    frm.refresh_field(childTableField);
     calculate_total_amount(frm);
-    frm.save()
+    frm.save();
 }
