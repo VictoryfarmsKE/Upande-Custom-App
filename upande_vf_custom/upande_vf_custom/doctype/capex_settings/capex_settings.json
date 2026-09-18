@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-17 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "overhead_section",
+  "overhead_help",
+  "farm_cost_accounts",
+  "include_labour",
+  "last_allocated_period",
+  "closure_section",
+  "closure_checklist"
+ ],
+ "fields": [
+  {
+   "default": "Victory Farms Ltd",
+   "description": "Capex overhead allocation and project closure apply to this company only",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "overhead_section",
+   "fieldtype": "Section Break",
+   "label": "Farm Overhead Allocation"
+  },
+  {
+   "fieldname": "overhead_help",
+   "fieldtype": "HTML",
+   "options": "<p class='text-muted small'>Each month, the net amount booked to the accounts below is shared across open capex projects in proportion to their budget. Nothing is allocated until at least one account is listed. Allocations are calculated for reporting only; no journal entries are posted.</p>"
+  },
+  {
+   "fieldname": "farm_cost_accounts",
+   "fieldtype": "Table",
+   "label": "Monthly Farm Cost Accounts",
+   "options": "Capex Farm Cost Account"
+  },
+  {
+   "description": "Also count accounts marked as Labour Cost",
+   "fieldname": "include_labour",
+   "fieldtype": "Check",
+   "label": "Include Labour"
+  },
+  {
+   "fieldname": "last_allocated_period",
+   "fieldtype": "Date",
+   "label": "Last Month Allocated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "closure_section",
+   "fieldtype": "Section Break",
+   "label": "Project Closure"
+  },
+  {
+   "description": "Copied onto every new Project Closure. Every item must be ticked before a closure can be submitted.",
+   "fieldname": "closure_checklist",
+   "fieldtype": "Table",
+   "label": "Default Closure Checklist",
+   "options": "Capex Closure Checklist Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-17 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Upande Vf Custom",
+ "name": "Capex Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "GCFO - VF",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
