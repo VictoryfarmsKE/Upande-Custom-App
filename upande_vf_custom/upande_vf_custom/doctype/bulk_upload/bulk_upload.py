@@ -139,25 +139,59 @@ class BulkUpload(Document):
     @frappe.whitelist()        
     def get_pending_payments(self):
         pymnts_list = []
-        self.mpesa_bulk_upload_items = []
-        # self.eft_bulk_upload_items = []
-        self.eft_ncba_bulk_upload_items = []
-        self.eft_stanbic_bulk_upload_items = []
-        # self.rtgs_bulk_upload_items = []
-        self.rtgs_ncba_bulk_upload_items = []
-        self.rtgs_stanbic_bulk_upload_items = []
-        self.international_payments_usd_bulk_upload_items = []
-        self.international_payments_zar_bulk_upload_items = []
-        self.international_payments_eur_bulk_upload_items = []
-        self.international_payments_gbp_bulk_upload_items = []
-        self.international_payments_rwf_bulk_upload_items = []
-        self.local_payments_usd_bulk_upload_items = []
-        # self.international_payments_bulk_upload_items = []
+
+        # Collect payment references already in the child tables so we skip them
+        existing_refs = set()
+        if self.type == "Mpesa":
+            for row in (self.mpesa_bulk_upload_items or []):
+                if row.payment_reference:
+                    existing_refs.add(row.payment_reference)
+        elif self.type == "EFT NCBA":
+            for row in (self.eft_ncba_bulk_upload_items or []):
+                if row.payment_reference:
+                    existing_refs.add(row.payment_reference)
+        elif self.type == "EFT STANBIC BANK":
+            for row in (self.eft_stanbic_bulk_upload_items or []):
+                if row.payment_reference:
+                    existing_refs.add(row.payment_reference)
+        elif self.type == "RTGS NCBA":
+            for row in (self.rtgs_ncba_bulk_upload_items or []):
+                if row.payment_reference:
+                    existing_refs.add(row.payment_reference)
+        elif self.type == "RTGS STANBIC BANK":
+            for row in (self.rtgs_stanbic_bulk_upload_items or []):
+                if row.payment_reference:
+                    existing_refs.add(row.payment_reference)
+        elif self.type == "Local Payments USD":
+            for row in (self.local_payments_usd_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
+        elif self.type == "International Payments USD":
+            for row in (self.international_payments_usd_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
+        elif self.type == "International Payments ZAR":
+            for row in (self.international_payments_zar_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
+        elif self.type == "International Payments EUR":
+            for row in (self.international_payments_eur_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
+        elif self.type == "International Payments GBP":
+            for row in (self.international_payments_gbp_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
+        elif self.type == "International Payments RWF":
+            for row in (self.international_payments_rwf_bulk_upload_items or []):
+                if row.reference:
+                    existing_refs.add(row.reference)
 
         draft_payments = frappe.db.get_all('Payment Entry', filters={
             'status': ['in', 'Draft'],
             'payment_type': 'Pay',
-            'custom_upload_type': self.type
+            'custom_upload_type': self.type,
+            'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
         }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
 
         total_grand_total = 0
