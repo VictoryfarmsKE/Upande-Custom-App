@@ -173,8 +173,12 @@ doc_events = {
 	},
 	"Purchase Invoice": {
 		"on_submit": "upande_vf_custom.custom_scripts.server_scripts.purchase_invoice.on_submit",
+	},
+	"Project": {
+		"onload": "upande_vf_custom.capex.project.onload",
+		"validate": "upande_vf_custom.capex.project.validate",
 	}
-	
+
 }
 
 # Scheduled Tasks
@@ -187,6 +191,10 @@ scheduler_events = {
 		],
 		"20 0 * * *": [
 			"upande_vf_custom.upande_vf_custom.doctype.mpesa_to_bank_sweep.mpesa_to_bank_sweep.auto_create_mpesa_to_bank_sweep_journal"
+		],
+		# 2nd of each month: share last month's farm costs across open capex projects
+		"0 3 2 * *": [
+			"upande_vf_custom.capex.overheads.allocate_previous_month"
 		]
 	}
 	# "daily": [
