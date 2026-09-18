@@ -1,0 +1,306 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-09-17 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "project",
+  "project_name",
+  "project_cluster",
+  "project_owner",
+  "column_break_main",
+  "company",
+  "closure_type",
+  "closure_date",
+  "financials_section",
+  "approved_budget",
+  "final_cost",
+  "column_break_fin",
+  "variance",
+  "variance_percent",
+  "variance_reason",
+  "checklist_section",
+  "checklist",
+  "documents_section",
+  "final_boq",
+  "completion_certificate",
+  "column_break_docs",
+  "other_documents",
+  "remarks",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "PCL-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "no_copy": 1,
+   "options": "PCL-.YYYY.-",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Capex Project",
+   "options": "Project",
+   "reqd": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fetch_from": "project.project_name",
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Project Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "project.custom_project_category",
+   "fieldname": "project_cluster",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Project Cluster",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "project.custom_project_owner",
+   "fieldname": "project_owner",
+   "fieldtype": "Link",
+   "label": "Project Owner",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "project.company",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "default": "Completed",
+   "description": "Completed marks the project Completed. Abandoned marks it Cancelled. Deferred leaves it Open.",
+   "fieldname": "closure_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Closure Type",
+   "options": "Completed\nAbandoned\nDeferred",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "closure_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Closure Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "financials_section",
+   "fieldtype": "Section Break",
+   "label": "Financial Reconciliation"
+  },
+  {
+   "fieldname": "approved_budget",
+   "fieldtype": "Currency",
+   "label": "Approved Budget",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "description": "Purchase invoices + consumables + allocated farm overheads, taken from the project",
+   "fieldname": "final_cost",
+   "fieldtype": "Currency",
+   "label": "Final Project Cost",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fin",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "variance",
+   "fieldtype": "Currency",
+   "label": "Variance (Cost \u2212 Budget)",
+   "options": "Company:company:default_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "variance_percent",
+   "fieldtype": "Percent",
+   "label": "Variance %",
+   "read_only": 1
+  },
+  {
+   "description": "Required whenever the final cost differs from the approved budget",
+   "fieldname": "variance_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason for Variance",
+   "mandatory_depends_on": "eval:flt(doc.variance) != 0"
+  },
+  {
+   "fieldname": "checklist_section",
+   "fieldtype": "Section Break",
+   "label": "Closure Checklist"
+  },
+  {
+   "fieldname": "checklist",
+   "fieldtype": "Table",
+   "label": "Checklist",
+   "options": "Project Closure Checklist Item"
+  },
+  {
+   "fieldname": "documents_section",
+   "fieldtype": "Section Break",
+   "label": "Supporting Documents"
+  },
+  {
+   "fieldname": "final_boq",
+   "fieldtype": "Attach",
+   "label": "Final BoQ"
+  },
+  {
+   "fieldname": "completion_certificate",
+   "fieldtype": "Attach",
+   "label": "Completion / Handover Certificate"
+  },
+  {
+   "fieldname": "column_break_docs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "other_documents",
+   "fieldtype": "Attach",
+   "label": "Other Supporting Document"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Project Closure",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-09-17 14:10:00.000000",
+ "modified_by": "Administrator",
+ "module": "Upande Vf Custom",
+ "name": "Project Closure",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "GCFO - VF",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction/Maintenance HOD - VF",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Maintenance User - VF",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1
+  }
+ ],
+ "search_fields": "project,project_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "closure_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "project_name",
+ "track_changes": 1
+}
