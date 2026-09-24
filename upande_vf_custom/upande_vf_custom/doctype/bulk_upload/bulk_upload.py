@@ -221,12 +221,23 @@ class BulkUpload(Document):
             )
             existing_refs = set(r.reference for r in existing_rows if r.reference)
 
-        draft_payments = frappe.db.get_all('Payment Entry', filters={
-            'status': ['in', 'Draft'],
-            'payment_type': 'Pay',
-            'custom_upload_type': self.type,
-            'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
-        }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
+        # For Mpesa, use docstatus to ensure we only get truly draft payments
+        # docstatus: 0 = Draft, 1 = Submitted, 2 = Cancelled
+        if self.type == "Mpesa":
+            draft_payments = frappe.db.get_all('Payment Entry', filters={
+                'docstatus': 0,
+                'payment_type': 'Pay',
+                'custom_upload_type': self.type,
+                'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
+            }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
+        else:
+            # For other payment types, keep the existing status filter
+            draft_payments = frappe.db.get_all('Payment Entry', filters={
+                'status': ['in', 'Draft'],
+                'payment_type': 'Pay',
+                'custom_upload_type': self.type,
+                'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
+            }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
 
         total_grand_total = 0
         
