@@ -140,95 +140,14 @@ class BulkUpload(Document):
     def get_pending_payments(self):
         pymnts_list = []
 
-        # Query the database directly for existing child table rows
-        # so we always get the latest saved state
-        existing_refs = set()
-        if self.type == "Mpesa":
-            existing_rows = frappe.get_all(
-                "Mpesa Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["payment_reference"]
-            )
-            existing_refs = set(r.payment_reference for r in existing_rows if r.payment_reference)
-        elif self.type == "EFT NCBA":
-            existing_rows = frappe.get_all(
-                "EFT NCBA Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["payment_reference"]
-            )
-            existing_refs = set(r.payment_reference for r in existing_rows if r.payment_reference)
-        elif self.type == "EFT STANBIC BANK":
-            existing_rows = frappe.get_all(
-                "EFT STANBIC BANK Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["payment_reference"]
-            )
-            existing_refs = set(r.payment_reference for r in existing_rows if r.payment_reference)
-        elif self.type == "RTGS NCBA":
-            existing_rows = frappe.get_all(
-                "RTGS NCBA Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["payment_reference"]
-            )
-            existing_refs = set(r.payment_reference for r in existing_rows if r.payment_reference)
-        elif self.type == "RTGS STANBIC BANK":
-            existing_rows = frappe.get_all(
-                "RTGS Stanbic Bank Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["payment_reference"]
-            )
-            existing_refs = set(r.payment_reference for r in existing_rows if r.payment_reference)
-        elif self.type == "Local Payments USD":
-            existing_rows = frappe.get_all(
-                "Local USD Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-        elif self.type == "International Payments USD":
-            existing_rows = frappe.get_all(
-                "International Payments USD Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-        elif self.type == "International Payments ZAR":
-            existing_rows = frappe.get_all(
-                "International Payments ZAR Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-        elif self.type == "International Payments EUR":
-            existing_rows = frappe.get_all(
-                "International Payments EUR Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-        elif self.type == "International Payments GBP":
-            existing_rows = frappe.get_all(
-                "International Payments GBP Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-        elif self.type == "International Payments RWF":
-            existing_rows = frappe.get_all(
-                "International Payments RWF Bulk Upload Item",
-                filters={"parent": self.name, "parenttype": "Bulk Upload"},
-                fields=["reference"]
-            )
-            existing_refs = set(r.reference for r in existing_rows if r.reference)
-
-        # For Mpesa, use docstatus to ensure we only get truly draft payments
-        # docstatus: 0 = Draft, 1 = Submitted, 2 = Cancelled
+        # Return ALL draft Payment Entries for this type/period. The client
+        # rebuilds its child table from this list, so submitted/cancelled
+        # entries disappear on the next "Get Draft Payments" click.
         if self.type == "Mpesa":
             draft_payments = frappe.db.get_all('Payment Entry', filters={
                 'docstatus': 0,
                 'payment_type': 'Pay',
                 'custom_upload_type': self.type,
-                'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
             }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
         else:
             # For other payment types, keep the existing status filter
@@ -236,7 +155,6 @@ class BulkUpload(Document):
                 'status': ['in', 'Draft'],
                 'payment_type': 'Pay',
                 'custom_upload_type': self.type,
-                'name': ['not in', list(existing_refs)] if existing_refs else ['!=', '']
             }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
 
         total_grand_total = 0
