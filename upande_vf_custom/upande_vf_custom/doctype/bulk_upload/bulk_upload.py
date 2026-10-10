@@ -47,6 +47,15 @@ class BulkUpload(Document):
 
                         p_entry.save()
                         p_entry.submit()
+
+        elif self.type == "Mpesa":
+            if self.mpesa_bulk_upload_items:
+                for item in self.mpesa_bulk_upload_items:
+                    p_entry = frappe.get_doc("Payment Entry", item.payment_reference)
+                    if p_entry.docstatus==0:
+                        p_entry.custom_cash_flow_period = self.cash_flow_period
+                        p_entry.save()
+                        p_entry.submit()
                         
         # elif self.type == "RTGS":
         #     if self.rtgs_bulk_upload_items:
@@ -130,26 +139,23 @@ class BulkUpload(Document):
     @frappe.whitelist()        
     def get_pending_payments(self):
         pymnts_list = []
-        self.mpesa_bulk_upload_items = []
-        # self.eft_bulk_upload_items = []
-        self.eft_ncba_bulk_upload_items = []
-        self.eft_stanbic_bulk_upload_items = []
-        # self.rtgs_bulk_upload_items = []
-        self.rtgs_ncba_bulk_upload_items = []
-        self.rtgs_stanbic_bulk_upload_items = []
-        self.international_payments_usd_bulk_upload_items = []
-        self.international_payments_zar_bulk_upload_items = []
-        self.international_payments_eur_bulk_upload_items = []
-        self.international_payments_gbp_bulk_upload_items = []
-        self.international_payments_rwf_bulk_upload_items = []
-        self.local_payments_usd_bulk_upload_items = []
-        # self.international_payments_bulk_upload_items = []
 
-        draft_payments = frappe.db.get_all('Payment Entry', filters={
-            'status': ['in', 'Draft'],
-            'payment_type': 'Pay',
-            'custom_upload_type': self.type
-        }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
+        # Return ALL draft Payment Entries for this type/period. The client
+        # rebuilds its child table from this list, so submitted/cancelled
+        # entries disappear on the next "Get Draft Payments" click.
+        if self.type == "Mpesa":
+            draft_payments = frappe.db.get_all('Payment Entry', filters={
+                'docstatus': 0,
+                'payment_type': 'Pay',
+                'custom_upload_type': self.type,
+            }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
+        else:
+            # For other payment types, keep the existing status filter
+            draft_payments = frappe.db.get_all('Payment Entry', filters={
+                'status': ['in', 'Draft'],
+                'payment_type': 'Pay',
+                'custom_upload_type': self.type,
+            }, fields=['name', 'party', 'paid_amount', 'custom_account_name', 'party_bank_account', 'custom_upload_type', 'reference_no'])
 
         total_grand_total = 0
         
@@ -170,9 +176,38 @@ class BulkUpload(Document):
                             pymnts_list.append(pymnt)
                             total_grand_total += pymnt.get("paid_amount", 0)
                 else:
-                   if not pymnt in pymnts_list:
-                        pymnts_list.append(pymnt) 
-                        total_grand_total += pymnt.get("paid_amount", 0)
+                    # Mpesa — fetch ALL beneficiaries so each gets its own row
+                    beneficiaries = frappe.get_all(
+                        "Payment Entry Beneficiary",
+                        filters={
+                            "parent": pymnt["name"],
+                            "parenttype": "Payment Entry",
+                        },
+                        fields=[
+                            "mobile_number",
+                            "document_type",
+                            "document_number",
+                            "purpose_of_payment",
+                            "amount",
+                        ],
+                    )
+                    if beneficiaries:
+                        for idx, b in enumerate(beneficiaries):
+                            entry = pymnt.copy()
+                            entry["name"] = f"{pymnt['name']}_{idx}"
+                            entry["pe_name"] = pymnt["name"]
+                            entry["mobilenumber"] = b.get("mobile_number") or ""
+                            entry["documenttype"] = b.get("document_type") or ""
+                            entry["supplier_invoice"] = b.get("document_number") or ""
+                            entry["purposeofpayment"] = b.get("purpose_of_payment") or ""
+                            entry["paid_amount"] = b.get("amount") or pymnt.get("paid_amount", 0)
+                            pymnts_list.append(entry)
+                            total_grand_total += entry["paid_amount"]
+                    else:
+                        # No beneficiaries — fall back to PE-level data
+                        if not pymnt in pymnts_list:
+                            pymnts_list.append(pymnt)
+                            total_grand_total += pymnt.get("paid_amount", 0)
                         
         response_data = {
             'draft_payments': pymnts_list,
