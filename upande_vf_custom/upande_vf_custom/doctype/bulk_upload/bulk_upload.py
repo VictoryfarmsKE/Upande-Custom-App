@@ -159,12 +159,19 @@ class BulkUpload(Document):
                 if pymnt.get("custom_upload_type") in ["EFT NCBA","EFT STANBIC BANK","RTGS", "RTGS NCBA", "RTGS STANBIC BANK", "International Payments", "Local Payments USD", "International Payments USD", "International Payments ZAR", "International Payments EUR", "International Payments GBP", "International Payments RWF"]:
                     if pymnt.get("party_bank_account"):
                         
-                        bank = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank')
-                        bank_account = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'bank_account_no')
-                        swift_code = frappe.db.get_value("Bank Account", {"name": pymnt.get("party_bank_account")}, 'custom_swift_code')
-                        pymnt["bank_name"] = bank
-                        pymnt["bank_account"] = bank_account
-                        pymnt["swift_code"] = swift_code
+                        # fetch_from only resolves through a rendered Link control, so the
+                        # grid stays blank when rows are added from script - send the values.
+                        account = frappe.db.get_value(
+                            "Bank Account",
+                            pymnt.get("party_bank_account"),
+                            ["bank", "bank_account_no", "custom_swift_code", "custom_bank_code", "branch_code"],
+                            as_dict=True,
+                        ) or {}
+                        pymnt["bank_name"] = account.get("bank")
+                        pymnt["bank_account"] = account.get("bank_account_no")
+                        pymnt["swift_code"] = account.get("custom_swift_code")
+                        pymnt["bank_code"] = account.get("custom_bank_code")
+                        pymnt["branch_code"] = account.get("branch_code")
                         
                         if not pymnt in pymnts_list:
                             pymnts_list.append(pymnt)

@@ -83,7 +83,7 @@
    "read_only": 1
   },
   {
-   "fetch_from": "bank_account.custom_branch",
+   "fetch_from": "bank_account.branch_code",
    "fetch_if_empty": 1,
    "fieldname": "branch_code",
    "fieldtype": "Data",
