@@ -38,7 +38,12 @@ def allocate(any_day_in_month):
 	if not accounts:
 		return _("No farm cost accounts are set up in Capex Settings, so nothing was allocated.")
 
-	pool = get_farm_cost_pool(settings.company, accounts, start, end)
+	overhead_percent = flt(settings.overhead_percent)
+	if not overhead_percent:
+		return _("Overhead % is not set in Capex Settings, so nothing was allocated.")
+
+	farm_costs = get_farm_cost_pool(settings.company, accounts, start, end)
+	pool = flt(farm_costs * overhead_percent / 100, 2)
 	projects = frappe.get_all(
 		"Project",
 		filters={
@@ -56,7 +61,7 @@ def allocate(any_day_in_month):
 	allocated_on = now_datetime()
 	for project in projects:
 		amount, share_percent = shares[project.name]
-		save_allocation(project.name, start, pool, share_percent, amount, allocated_on)
+		save_allocation(project.name, start, farm_costs, pool, share_percent, amount, allocated_on)
 
 	# Projects allocated on an earlier run that no longer qualify are zeroed, not removed.
 	eligible = {p.name for p in projects}
@@ -64,15 +69,21 @@ def allocate(any_day_in_month):
 		ALLOCATION, filters={"parenttype": "Project", "period": start}, fields=["name", "parent"], as_list=True
 	):
 		if parent not in eligible:
-			frappe.db.set_value(ALLOCATION, name, {"amount": 0, "share_percent": 0, "pool_amount": pool})
+			frappe.db.set_value(
+				ALLOCATION, name, {"amount": 0, "share_percent": 0, "farm_costs": farm_costs, "pool_amount": pool}
+			)
 			refresh_project_costs(parent)
 
 	if not settings.last_allocated_period or getdate(settings.last_allocated_period) < start:
 		settings.db_set("last_allocated_period", start)
 
 	currency = frappe.get_cached_value("Company", settings.company, "default_currency")
-	return _("Allocated {0} of farm costs for {1} across {2} open capex projects.").format(
-		fmt_money(pool, currency=currency), start.strftime("%B %Y"), len(projects)
+	return _("Allocated {0} ({1}% of {2} farm costs) for {3} across {4} open capex projects.").format(
+		fmt_money(pool, currency=currency),
+		flt(overhead_percent, 2),
+		fmt_money(farm_costs, currency=currency),
+		start.strftime("%B %Y"),
+		len(projects),
 	)
 
 
@@ -138,8 +149,9 @@ def split_pool(pool, projects):
 	return shares
 
 
-def save_allocation(project, period, pool, share_percent, amount, allocated_on):
+def save_allocation(project, period, farm_costs, pool, share_percent, amount, allocated_on):
 	values = {
+		"farm_costs": farm_costs,
 		"pool_amount": pool,
 		"share_percent": share_percent,
 		"amount": amount,

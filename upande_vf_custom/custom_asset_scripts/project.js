@@ -15,11 +15,19 @@ function manage_capex_buttons(frm) {
     // Remove existing buttons first to avoid duplicates
     frm.remove_custom_button(__('Create Asset'), __('Actions'));
     frm.remove_custom_button(__('Close Project'), __('Actions'));
+    frm.remove_custom_button(__('Budget Variation'), __('Actions'));
+
+    const budget_locked = frm.doc.project_type === CWIP && !frm.is_new()
+        && ((frm.doc.workflow_state || '').startsWith('Approved') || !!frm.doc.custom_original_budget);
+    frm.set_df_property('custom_budget', 'read_only', budget_locked ? 1 : 0);
 
     if (frm.is_new() || frm.doc.project_type !== CWIP)
         return;
 
     if (!frm.doc.custom_project_closure) {
+        frm.add_custom_button(__('Budget Variation'), function() {
+            frappe.new_doc('Capex Budget Variation', { project: frm.doc.name });
+        }, __('Actions'));
         frm.add_custom_button(__('Close Project'), function() {
             frappe.new_doc('Project Closure', { project: frm.doc.name });
         }, __('Actions'));
