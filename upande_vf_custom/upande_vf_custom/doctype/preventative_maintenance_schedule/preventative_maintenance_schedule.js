@@ -61,6 +61,7 @@ frappe.ui.form.on('Preventative Maintenance Schedule', {
                             checked_tasks.forEach(task => {
                                 frappe.model.set_value(task.doctype, task.name, 'checked', 0);
                                 frappe.model.set_value(task.doctype, task.name, 'maintenance_status', 'Pending');
+                                frappe.model.set_value(task.doctype, task.name, 'comment', '');
                             });
 
                             frm.set_value('signature', ''); // Clear signature
