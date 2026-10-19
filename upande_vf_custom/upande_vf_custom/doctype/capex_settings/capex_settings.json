@@ -8,6 +8,7 @@
   "company",
   "overhead_section",
   "overhead_help",
+  "overhead_percent",
   "farm_cost_accounts",
   "include_labour",
   "last_allocated_period",
@@ -32,7 +33,14 @@
   {
    "fieldname": "overhead_help",
    "fieldtype": "HTML",
-   "options": "<p class='text-muted small'>Each month, the net amount booked to the accounts below is shared across open capex projects in proportion to their budget. Nothing is allocated until at least one account is listed. Allocations are calculated for reporting only; no journal entries are posted.</p>"
+   "options": "<p class='text-muted small'>Each month, Overhead % of the net amount booked to the accounts below is shared across open capex projects in proportion to their budget. Nothing is allocated until at least one account is listed. Allocations are calculated for reporting only; no journal entries are posted.</p>"
+  },
+  {
+   "default": "10",
+   "description": "Share of the farm cost accounts' monthly total that is treated as overheads and allocated to capex projects",
+   "fieldname": "overhead_percent",
+   "fieldtype": "Percent",
+   "label": "Overhead %"
   },
   {
    "fieldname": "farm_cost_accounts",
@@ -58,7 +66,7 @@
    "label": "Project Closure"
   },
   {
-   "description": "Copied onto every new Project Closure. Every item must be ticked before a closure can be submitted.",
+   "description": "Copied onto every new Project Closure. Every item must be ticked before a closure can be sent for approval. Open purchase orders, unbilled purchases and open material requests are checked by the system.",
    "fieldname": "closure_checklist",
    "fieldtype": "Table",
    "label": "Default Closure Checklist",
@@ -68,7 +76,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-17 12:00:00.000000",
+ "modified": "2026-10-16 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "Capex Settings",

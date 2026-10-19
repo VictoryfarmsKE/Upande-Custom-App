@@ -24,6 +24,12 @@
   "variance_reason",
   "checklist_section",
   "checklist",
+  "system_checks_section",
+  "open_purchase_orders",
+  "unbilled_purchases",
+  "open_material_requests",
+  "column_break_checks",
+  "system_check_details",
   "documents_section",
   "final_boq",
   "completion_certificate",
@@ -167,16 +173,53 @@
    "options": "Project Closure Checklist Item"
   },
   {
+   "collapsible": 0,
+   "description": "Filled in by the system on save. A closure of type Completed or Abandoned can only be sent for approval when all three are zero.",
+   "fieldname": "system_checks_section",
+   "fieldtype": "Section Break",
+   "label": "System Checks"
+  },
+  {
+   "fieldname": "open_purchase_orders",
+   "fieldtype": "Int",
+   "label": "Purchase Orders Not Received or Closed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unbilled_purchases",
+   "fieldtype": "Int",
+   "label": "Purchases Without a Booked Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "open_material_requests",
+   "fieldtype": "Int",
+   "label": "Open Material Requests",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_checks",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "system_check_details",
+   "fieldtype": "Small Text",
+   "label": "Outstanding Documents",
+   "read_only": 1
+  },
+  {
    "fieldname": "documents_section",
    "fieldtype": "Section Break",
    "label": "Supporting Documents"
   },
   {
+   "description": "Required before sending for approval, except for Deferred closures",
    "fieldname": "final_boq",
    "fieldtype": "Attach",
    "label": "Final BoQ"
   },
   {
+   "description": "Required before sending a Completed closure for approval",
    "fieldname": "completion_certificate",
    "fieldtype": "Attach",
    "label": "Completion / Handover Certificate"
@@ -209,7 +252,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-17 14:10:00.000000",
+ "modified": "2026-10-16 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Upande Vf Custom",
  "name": "Project Closure",

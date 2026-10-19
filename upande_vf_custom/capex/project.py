@@ -9,7 +9,9 @@ REQUIRED_ON_NEW_CAPEX = (
 	("custom_project_owner", "Project Owner"),
 	("custom_project_description", "Project Description"),
 	("custom_location", "Location"),
+	("custom_project_category", "Project Cluster"),
 )
+APPROVED_STATE_PREFIX = "Approved"
 
 
 def compute_project_costs(project):
@@ -58,7 +60,38 @@ def validate(doc, method=None):
 			)
 
 	set_project_costs(doc)
+	keep_original_budget(doc)
+	validate_budget_change(doc)
 	warn_if_completed_without_closure(doc)
+
+
+def is_approved(project):
+	return (project.get("workflow_state") or "").startswith(APPROVED_STATE_PREFIX)
+
+
+def is_budget_locked(project):
+	return (
+		is_approved(project)
+		or bool(flt(project.get("custom_original_budget")))
+		or bool(frappe.db.exists("Capex Budget Variation", {"project": project.name, "docstatus": 1}))
+	)
+
+
+def keep_original_budget(doc):
+	if is_approved(doc) and not flt(doc.custom_original_budget):
+		doc.custom_original_budget = doc.custom_budget
+
+
+def validate_budget_change(doc):
+	before = doc.get_doc_before_save()
+	if not before or not is_budget_locked(before):
+		return
+
+	if flt(doc.custom_budget, 2) != flt(before.custom_budget, 2):
+		frappe.throw(
+			_("The budget of an approved capex project can only be changed through a Capex Budget Variation."),
+			title=_("Budget locked"),
+		)
 
 
 def warn_if_completed_without_closure(doc):

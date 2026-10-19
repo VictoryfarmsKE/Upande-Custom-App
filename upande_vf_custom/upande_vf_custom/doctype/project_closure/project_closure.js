@@ -34,6 +34,10 @@ frappe.ui.form.on("Project Closure", {
 		if (frm.doc.project) {
 			frm.add_custom_button(__("View Project"), () => frappe.set_route("Form", "Project", frm.doc.project));
 		}
+
+		if (frm.doc.docstatus === 1 && frm.doc.closure_type === "Completed") {
+			frm.add_custom_button(__("Create Asset"), () => create_asset(frm));
+		}
 	},
 
 	project(frm) {
@@ -55,7 +59,7 @@ function fill_from_project(frm) {
 		callback(r) {
 			if (!r.message) return;
 
-			frm.set_value(r.message.financials);
+			frm.set_value(Object.assign({}, r.message.financials, r.message.system_checks));
 
 			// Keep any ticks already made; only seed an empty checklist.
 			if (!(frm.doc.checklist || []).length) {
@@ -63,5 +67,52 @@ function fill_from_project(frm) {
 				frm.refresh_field("checklist");
 			}
 		},
+	});
+}
+
+function create_asset(frm) {
+	frappe.db.get_value("Project", frm.doc.project, "custom_location").then(({ message }) => {
+		frappe.prompt(
+			[
+				{
+					label: __("Item Code"),
+					fieldname: "item_code",
+					fieldtype: "Link",
+					options: "Item",
+					reqd: 1,
+					description: __("Select an existing Item Code. Its Asset Category decides the accounts used."),
+					get_query: () => ({ filters: { item_group: "Fixed Assets", is_fixed_asset: 1, disabled: 0 } }),
+				},
+				{
+					label: __("Location"),
+					fieldname: "location",
+					fieldtype: "Link",
+					options: "Location",
+					reqd: 1,
+					default: message && message.custom_location,
+				},
+			],
+			(values) => {
+				frappe.call({
+					method: "upande_vf_custom.capex.project.create_asset_from_project",
+					args: { project: frm.doc.project, item_code: values.item_code, location: values.location },
+					freeze: true,
+					freeze_message: __("Creating asset..."),
+					callback(r) {
+						if (!r.message) return;
+
+						frappe.msgprint(
+							__("Asset {0} and draft Journal Entry {1} created for {2}.", [
+								frappe.utils.get_form_link("Asset", r.message.asset, true),
+								frappe.utils.get_form_link("Journal Entry", r.message.journal_entry, true),
+								format_currency(r.message.amount),
+							])
+						);
+					},
+				});
+			},
+			__("Create Asset"),
+			__("Create")
+		);
 	});
 }
