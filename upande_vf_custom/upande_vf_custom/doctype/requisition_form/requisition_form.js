@@ -229,7 +229,7 @@ frappe.ui.form.on('Requisition Form', {
 	get_item_data: function(frm, item, overwrite_warehouse=false) {
 		if (item && !item.item_code) { return; }
 		frm.call({
-			method: "erpnext.stock.get_item_details.get_item_details",
+			method: "upande_vf_custom.upande_vf_custom.doctype.requisition_form.requisition_form.get_requisition_item_details",
 			child: item,
 			args: {
 				args: {
