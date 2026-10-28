@@ -15,6 +15,11 @@ from erpnext.manufacturing.doctype.work_order.work_order import get_item_details
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.stock.stock_balance import get_indented_qty, update_bin_qty
 
+try:
+	from erpnext.stock.get_item_details import _get_item_details
+except ImportError:
+	from erpnext.stock.get_item_details import get_item_details as _get_item_details
+
 from upande_vf_custom.custom_scripts.fuel_asset import is_fuel_row, validate_fuel_asset
 
 form_grid_templates = {"items": "templates/form_grid/material_request_grid.html"}
@@ -369,6 +374,15 @@ def get_list_context(context=None):
 	)
 
 	return list_context
+
+
+@frappe.whitelist()
+def get_requisition_item_details(args, overwrite_warehouse=True):
+	args = frappe._dict(frappe.parse_json(args))
+	name = args.name if isinstance(args.name, str) and frappe.db.exists("Requisition Form", args.name) else None
+	frappe.has_permission("Requisition Form", doc=name, throw=True)
+	args.doctype = "Requisition Form"
+	return _get_item_details(args, overwrite_warehouse=overwrite_warehouse)
 
 
 @frappe.whitelist()
